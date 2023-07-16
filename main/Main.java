@@ -2,6 +2,7 @@ package main;
 
 import charge.PointCharge;
 import electricfield.ElectricField;
+import electricfield.FieldLine;
 import vectorspace2d.Vector2D;
 
 public class Main {
@@ -21,8 +22,10 @@ public class Main {
 		e.calculateFieldLines();
 		
 		
-		for(Vector2D v : e.getFieldLines()) {
-			System.out.println(v);
+		for(FieldLine f : e.getFieldLines()) {
+			for(Vector2D v : f.getPoints()) {
+				System.out.println(v);
+			}
 		}				
 		
 	}

@@ -4,6 +4,8 @@ import vectorspace2d.Vector2D;
 
 public class PointCharge extends Charge {	
 	
+	//public static final 
+	
 	public PointCharge(Vector2D location, float charge) {
 		super(location, charge);
 	}

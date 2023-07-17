@@ -16,7 +16,7 @@ public class ODE {
 		Vector2D k1 = new Vector2D(0.0f, 0.0f);
 		Vector2D k2 = new Vector2D(0.0f, 0.0f);
 		Vector2D k3 = new Vector2D(0.0f, 0.0f);
-		Vector2D k4 = new Vector2D(0.0f, 0.0f);				
+		Vector2D k4 = new Vector2D(0.0f, 0.0f);	
 				
 		//solution.add(v_start);		
 		

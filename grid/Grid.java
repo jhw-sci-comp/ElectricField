@@ -19,6 +19,6 @@ public class Grid {
 				points.add(new Point(MINWIDTH + i * DISTANCE, MINHEIGHT + j * DISTANCE));
 			}
 		}
-	}	
+	}
 	
 }

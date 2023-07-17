@@ -50,8 +50,7 @@ public class ElectricField {
 	
 	/*TODO: 
 	 * - loop over all charges
-	 * - loop over 8 directions from charge
-	 * - how to deal with negative charges? (maybe invert direction an follow the line?)*/
+	 * - loop over 8 directions from charge */
 	public void calculateFieldLines() {		
 		Vector2D v_start = new Vector2D(0.0f, 0.0f);
 		Vector2D r_new = new Vector2D(0.0f, 0.0f);
@@ -71,6 +70,7 @@ public class ElectricField {
 		r_temp.setY(charges.get(0).getLocation().getY());		
 		
 		field_line_temp.addPoint(new Vector2D(v_start));
+		
 		
 		if(charges.get(0).getCharge() >= 0.0f) {
 			r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(0.0f, step_size)), step_size,  (r) -> this.calculateFieldVector(r)));
@@ -145,7 +145,8 @@ public class ElectricField {
 		}		
 		
 		
-		field_lines.add(field_line_temp);
+		field_lines.add(new FieldLine(field_line_temp));
+		field_line_temp.getPoints().clear();
 		
 	}
 	

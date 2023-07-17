@@ -20,13 +20,14 @@ public class Main {
 		System.out.println("E = " + (Math.sqrt(Math.pow(E.getX(), 2) + Math.pow(E.getY(), 2))));
 		
 		e.calculateFieldLines();
-		
+				
 		
 		for(FieldLine f : e.getFieldLines()) {
 			for(Vector2D v : f.getPoints()) {
 				System.out.println(v);
 			}
 		}				
+
 		
 	}
 

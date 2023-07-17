@@ -4,6 +4,7 @@ public class Vector2D {
 	
 	private float x;
 	private float y;
+	private float direction;
 	
 	public Vector2D(float x, float y) {
 		this.x = x;
@@ -54,8 +55,45 @@ public class Vector2D {
 			return false;
 		}		
 	}
-
-
+	
+	public void calculateDirection() {
+		if(this.x == 0.0f) {
+			if(this.y > 0.0f) {
+				this.direction = (float) Math.PI / 2.0f;
+			}			
+			else if(this.y < 0.0f) {
+				this.direction = (float) -Math.PI / 2.0f;
+			}
+		}
+		else if(this.x > 0.0f) {
+			if(this.y > 0.0f) {
+				this.direction = (float) Math.atan(this.y / this.x);
+			}			
+			else if(this.y < 0.0f) {
+				this.direction = (float) Math.atan(this.y / this.x);
+			}
+			else if(this.y == 0.0f) {
+				this.direction = 0.0f;
+			}
+		}
+		else if(this.x < 0.0f) {
+			if(this.y > 0.0f) {
+				this.direction = (float) (Math.PI -  Math.abs(Math.atan(this.y / this.x)));
+			}			
+			else if(this.y < 0.0f) {
+				this.direction = (float) -(Math.PI -  Math.abs(Math.atan(this.y / this.x)));
+			}
+			else if(this.y == 0.0f) {
+				this.direction = (float) Math.PI;
+			}
+		}
+	}
+	
+	public float getDirection() {
+		return this.direction;
+	}
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

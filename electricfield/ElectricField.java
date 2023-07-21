@@ -12,10 +12,11 @@ import vectorspace2d.VectorSpace2D;
 
 public class ElectricField {
 	private static final float EPS_0 = 8.854E-12f;
-	private  float eps_r = 1.0f;
-	//private Grid grid = new Grid();
+	private  float eps_r = 1.0f;	
 	private ArrayList<Charge> charges = new ArrayList<Charge>();
 	private ArrayList<FieldLine> field_lines = new ArrayList<FieldLine>();
+	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();
+	private ArrayList<Float> potentials = new ArrayList<Float>();
 	
 	public ElectricField(Charge... charges) {
 		for(Charge c : charges) {
@@ -29,7 +30,7 @@ public class ElectricField {
 	public Vector2D calculateFieldVector(Vector2D p) {
 		float E_x = 0.0f;
 		float E_y = 0.0f;
-		float factor;
+		float factor = 0.0f;
 		float dx, dy;
 		
 		for(int i = 0; i < charges.size(); i++) {
@@ -48,6 +49,41 @@ public class ElectricField {
 	}	
 	
 	
+	public float calculateElectricPotential(Vector2D p) {
+		float potential = 0.0f;
+		float dx, dy;
+		
+		for(int i = 0; i < charges.size(); i++) {
+			dx = p.getX() - charges.get(i).getLocation().getX();
+			dy = p.getY() - charges.get(i).getLocation().getY();
+			potential += charges.get(i).getCharge() / ((float) (VectorSpace2D.calculate2Norm(new Vector2D(dx, dy))));			
+		}
+		
+		return 1 / (4.0f * (float) Math.PI * EPS_0 * eps_r) * potential;
+	}
+	
+	
+	public void calculateVectorField() {
+		int m = (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) / Grid.DISTANCE);
+		int n = (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) / Grid.DISTANCE);
+		Vector2D v_temp;
+		
+		System.out.println("m: " + m);
+		System.out.println("n: " + n);
+		
+		for(int i = 0; i < n; i++) {
+			for(int j = 0; j < m ; j++) {
+				v_temp = new Vector2D(Grid.MINWIDTH + j * Grid.DISTANCE, Grid.MINHEIGHT + i * Grid.DISTANCE);
+				this.potentials.add(this.calculateElectricPotential(v_temp));
+				
+				if(j % 10 == 0) {					
+					this.vector_field.add(this.calculateFieldVector(v_temp));
+				}
+			}
+		}
+	}
+	
+	
 	/*TODO: 
 	 * - loop over all charges
 	 * - loop over 8 directions from charge */
@@ -59,7 +95,7 @@ public class ElectricField {
 		boolean valid_step = true;
 		float step_size = 0.001f;
 		
-		
+				
 		v_start.setX(charges.get(0).getLocation().getX());
 		v_start.setY(charges.get(0).getLocation().getY());
 		
@@ -152,6 +188,14 @@ public class ElectricField {
 	
 	public ArrayList<FieldLine> getFieldLines() {
 		return field_lines;
+	}
+	
+	public ArrayList<Float> getPotentials() {
+		return this.potentials;
+	}
+	
+	public ArrayList<Vector2D> getVectorField() {
+		return this.vector_field;
 	}
 	
 }

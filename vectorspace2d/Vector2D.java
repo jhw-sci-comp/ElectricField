@@ -9,11 +9,13 @@ public class Vector2D {
 	public Vector2D(float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.calculateDirection();
 	}
 	
 	public Vector2D(Vector2D v_arg) {
 		this.x = v_arg.getX();
 		this.y = v_arg.getY();
+		this.calculateDirection();
 	}
 	
 	public float getX() {
@@ -121,7 +123,7 @@ public class Vector2D {
 
 	@Override
 	public String toString() {
-		return "Vector2D = (" + x + ", " + y + ")";
+		return "(" + x + ", " + y + "), direction = " + direction;
 	}
 	
 	

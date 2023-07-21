@@ -4,6 +4,7 @@ import charge.PointCharge;
 import electricfield.ElectricField;
 import electricfield.FieldLine;
 import vectorspace2d.Vector2D;
+import visualization.MainFrame;
 
 public class Main {
 
@@ -26,8 +27,20 @@ public class Main {
 			for(Vector2D v : f.getPoints()) {
 				System.out.println(v);
 			}
-		}				
-
+		}		
+		
+		e.calculateVectorField();
+		
+		System.out.println("Vector Field Size: " + e.getVectorField().size());
+		
+		
+		
+		System.out.println(q1);
+		
+		System.out.println("V = " + e.calculateElectricPotential(new Vector2D(0.0f, 0.0f)));	
+		
+		MainFrame main_frame = new MainFrame();
+		//main_frame.setVisible(true);
 		
 	}
 

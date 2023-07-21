@@ -2,23 +2,23 @@ package grid;
 
 import java.util.ArrayList;
 
+import vectorspace2d.Vector2D;
+
 public class Grid {
-	public static final float MINWIDTH =  -0.02f;
-	public static final float MAXWIDTH =   0.02f;
-	public static final float MINHEIGHT = -0.02f;
-	public static final float MAXHEIGHT =  0.02f;
+	public static final float MINWIDTH =  -0.2f;  // -0.2 m
+	public static final float MAXWIDTH =   0.2f;
+	public static final float MINHEIGHT = -0.2f;
+	public static final float MAXHEIGHT =  0.2f;
 	public static final float DISTANCE = 0.001f;
-	public ArrayList<Point> points = new ArrayList<Point>();
+	public ArrayList<Vector2D> points = new ArrayList<Vector2D>();	
 	
-	public Grid() {
-		int m = (int) ((MAXWIDTH - MINWIDTH) / DISTANCE);
-		int n = (int) ((MAXHEIGHT - MINHEIGHT) / DISTANCE);
-		
-		for(int i = 0; i <= m; i++) {
-			for(int j = 0; j <= n; j++) {
-				points.add(new Point(MINWIDTH + i * DISTANCE, MINHEIGHT + j * DISTANCE));
-			}
-		}
+	private float grid_width;
+	private float grid_height;
+	
+	
+	public Grid(float grid_width, float grid_height) {
+		this.grid_width = grid_width;
+		this.grid_height = grid_height;
 	}
 	
 }

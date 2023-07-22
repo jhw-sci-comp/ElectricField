@@ -1,8 +1,10 @@
 package visualization;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ComponentListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -49,7 +51,7 @@ public class VisualizationElectricField extends JPanel {
 	private ArrayList<Integer> transformCoordinate(float x, float y){
 		ArrayList<Integer> transformed_coordinates = new ArrayList<Integer>();		
 		
-		transformed_coordinates.add(x_shift + (int) (x * scaling));
+		transformed_coordinates.add(x_shift + (int) ((Math.abs(Grid.MINWIDTH) + x) * scaling));
 		transformed_coordinates.add(y_shift + (int) ((Grid.MAXHEIGHT - y) * scaling));
 		
 		return transformed_coordinates;
@@ -61,8 +63,11 @@ public class VisualizationElectricField extends JPanel {
 	}
 	
 	private void drawGrid(Graphics g) {		
-		g.setColor(Color.lightGray);			
+		g.setColor(Color.lightGray);
 		
+		Font font = g.getFont().deriveFont( 15.0f );
+		float string_value;
+				
 		int transformed_x_range = transformScale((Grid.MAXWIDTH - Grid.MINWIDTH));
 		int transformed_y_range = transformScale((Grid.MAXHEIGHT - Grid.MINHEIGHT));
 				
@@ -72,43 +77,46 @@ public class VisualizationElectricField extends JPanel {
 			}
 		}
 		
+		
+	    g.setFont(font);
+	    		
 		g.setColor(Color.darkGray);
-		for(int i = x_shift; i <=  x_shift + transformed_x_range; i += 50) {
-			g.drawLine(i, y_shift, i, y_shift + transformed_y_range);
-		}
 		
-		for(int j = y_shift; j <= y_shift + transformed_y_range; j += 50) {
-			g.drawLine(x_shift, j,  x_shift + transformed_x_range, j);
-		}
-		
-		
-		//System.out.println(transformed_range.get(0) + ", " + transformed_range.get(1));
-		
-			
-		// Richtige Darstellung: *********************************************
-		
-		//System.out.println("x_shift: " + x_shift);
-		//System.out.println("y_shift: " + y_shift);
-		//System.out.println("scaling: " + scaling);
-		//System.out.println((x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * scaling)) + ", " + (y_shift + (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling)));
-		
-		/*
-		for(int i = x_shift; i < x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * scaling); i += 10) {
-			for (int j = y_shift; j < y_shift + (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling); j += 10) {
-				g.drawRect(i, j, 10, 10);
+		for(int i = x_shift; i <=  x_shift + transformed_x_range; i += 50) {			
+			if((i - x_shift) % 100 == 0) {
+				g.drawLine(i, y_shift, i, y_shift + transformed_y_range + 10);
+				
+				string_value = Math.round((Grid.MINWIDTH + ((float) (i - x_shift)) / scaling) * 100) / 100.0f;
+				if(string_value < 0.0f) {
+					g.drawString(Float.toString(string_value), i - 15, y_shift + transformed_y_range + 25);
+				}
+				else {
+					g.drawString(Float.toString(string_value), i - 10, y_shift + transformed_y_range + 25);
+				}
+			}
+			else {
+				g.drawLine(i, y_shift, i, y_shift + transformed_y_range);
 			}
 		}
 		
-		g.setColor(Color.darkGray);
-		for(int i = x_shift; i <= x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * scaling); i += 100) {
-			g.drawLine(i, y_shift, i, y_shift + (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling));
-		}
 		
-		for(int j = y_shift; j <= y_shift + (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling); j += 100) {
-			g.drawLine(x_shift, j, x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * scaling), j);
-		}
-		*/
-			
+		for(int j = y_shift; j <= y_shift + transformed_y_range; j += 50) {
+			if((j - y_shift) % 100 == 0) {
+				g.drawLine(x_shift - 5, j,  x_shift + transformed_x_range, j);
+				
+				string_value = Math.round((Grid.MAXHEIGHT - ((float) (j - y_shift)) / scaling) * 100) / 100.0f;
+				if(string_value <= 0.0f) {
+					g.drawString(Float.toString(string_value), x_shift - 40, j + 5);
+					
+				}
+				else {
+					g.drawString(Float.toString(string_value), x_shift - 40, j + 5);
+				}
+			}
+			else {
+				g.drawLine(x_shift, j,  x_shift + transformed_x_range, j);
+			}
+		}			
 		
 	}
 	
@@ -120,12 +128,22 @@ public class VisualizationElectricField extends JPanel {
 			transformed_location.add(transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).get(0));
 			transformed_location.add(transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).get(1));
 			
-			System.out.println("transformed_location: " + transformed_location.get(0) + ", " + transformed_location.get(1));
+			//System.out.println("transformed_location: " + transformed_location.get(0) + ", " + transformed_location.get(1));
 			
 			if(c.getCharge() >= 0.0f) {
+				g.setColor(Color.BLACK);
+				g.drawOval(transformed_location.get(0) - 10, transformed_location.get(1) - 10, 20, 20);
 				g.setColor(Color.RED);
-				g.fillOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
+				g.fillOval(transformed_location.get(0) - 10, transformed_location.get(1) - 10, 20, 20);
+			}			
+			else {
+				g.setColor(Color.BLACK);
+				g.drawOval(transformed_location.get(0) - 10, transformed_location.get(1) - 10, 20, 20);
+				g.setColor(Color.BLUE);
+				g.fillOval(transformed_location.get(0) - 10, transformed_location.get(1) - 10, 20, 20);
 			}
+			
+			transformed_location.clear();
 		}
 	}
 	

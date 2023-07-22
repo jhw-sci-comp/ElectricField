@@ -39,7 +39,7 @@ public class Main {
 		
 		System.out.println("V = " + e.calculateElectricPotential(new Vector2D(0.0f, 0.0f)));	
 		
-		MainFrame main_frame = new MainFrame();
+		MainFrame main_frame = new MainFrame(e);
 		//main_frame.setVisible(true);
 		
 	}

@@ -12,6 +12,8 @@ import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import electricfield.ElectricField;
+
 
 public class MainFrame extends JFrame {
 	
@@ -19,7 +21,8 @@ public class MainFrame extends JFrame {
 	private VisualizationElectricField visual_electric_field;
 	private VisualizationScale visual_scale = new VisualizationScale();
 	
-	public MainFrame() {
+	
+	public MainFrame(ElectricField electric_field) {
 		this.setSize(1400, 1000);
 		this.setTitle("Electric Field");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,7 +34,7 @@ public class MainFrame extends JFrame {
 		
 		layout_panel.setSize(this.getContentPane().getSize().width, this.getContentPane().getSize().height);
 		
-		visual_electric_field = new VisualizationElectricField(layout_panel);
+		visual_electric_field = new VisualizationElectricField(layout_panel, electric_field);
 				
 		this.setLayout(new BorderLayout());		
 		layout_panel.setLayout(new GridBagLayout());

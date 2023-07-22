@@ -198,4 +198,8 @@ public class ElectricField {
 		return this.vector_field;
 	}
 	
+	public ArrayList<Charge> getCharges() {
+		return this.charges;
+	}
+	
 }

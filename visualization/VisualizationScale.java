@@ -9,7 +9,7 @@ public class VisualizationScale extends JPanel {
 		
 	public VisualizationScale() {
 		//this.setSize(100, 100);
-		this.setBackground(Color.blue);
+		this.setBackground(Color.WHITE);
 		
 	}
 	

@@ -12,17 +12,18 @@ import vectorspace2d.VectorSpace2D;
 
 public class ElectricField {
 	private static final float EPS_0 = 8.854E-12f;
-	private  float eps_r = 1.0f;	
+	private float eps_r = 1.0f;	
 	private ArrayList<Charge> charges = new ArrayList<Charge>();
 	private ArrayList<FieldLine> field_lines = new ArrayList<FieldLine>();
 	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();
 	private ArrayList<Float> potentials = new ArrayList<Float>();
+	private Grid grid = new Grid();
 	
 	public ElectricField(Charge... charges) {
 		for(Charge c : charges) {
 			this.charges.add(c);
 		}
-		
+				
 	}	
 	
 	
@@ -33,17 +34,30 @@ public class ElectricField {
 		float factor = 0.0f;
 		float dx, dy;
 		
+		//System.out.println("p: " + p);
+		
 		for(int i = 0; i < charges.size(); i++) {
 			dx = p.getX() - charges.get(i).getLocation().getX();
 			dy = p.getY() - charges.get(i).getLocation().getY();
+			
+			//System.out.println("dx: " + dx);
+			//System.out.println("dy: " + dy);
+			//System.out.println("norm: " + VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)));
+			
+			//System.out.println(i + ": " + (float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
+			
 			factor = charges.get(i).getCharge() / ((float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
+			//System.out.println("factor: " + factor);
+			
 			E_x += factor * dx;
 			E_y += factor * dy;
 		}
 		
-		factor = 1 / (4.0f * (float) Math.PI * EPS_0 * eps_r);
+		factor = 1.0f / (4.0f * (float) Math.PI * EPS_0 * eps_r);		
 		E_x = factor * E_x;
 		E_y = factor * E_y;
+		
+		//System.out.println("E_x: " + E_x);
 		
 		return new Vector2D(E_x, E_y);
 	}	
@@ -59,29 +73,23 @@ public class ElectricField {
 			potential += charges.get(i).getCharge() / ((float) (VectorSpace2D.calculate2Norm(new Vector2D(dx, dy))));			
 		}
 		
-		return 1 / (4.0f * (float) Math.PI * EPS_0 * eps_r) * potential;
+		return 1.0f / (4.0f * (float) Math.PI * EPS_0 * eps_r) * potential;
 	}
 	
 	
-	public void calculateVectorField() {
-		int m = (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) / Grid.DISTANCE);
-		int n = (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) / Grid.DISTANCE);
-		Vector2D v_temp;
-		
-		System.out.println("m: " + m);
-		System.out.println("n: " + n);
-		
-		for(int i = 0; i < n; i++) {
-			for(int j = 0; j < m ; j++) {
-				v_temp = new Vector2D(Grid.MINWIDTH + j * Grid.DISTANCE, Grid.MINHEIGHT + i * Grid.DISTANCE);
-				this.potentials.add(this.calculateElectricPotential(v_temp));
+	public void calculateVectorField() {		
+		for(int i = 0; i <= grid.getRows(); i++) {
+			for(int j = 0; j <= grid.getCols(); j++) {				
+				this.potentials.add(this.calculateElectricPotential(grid.getPoints().get(i * (grid.getCols() + 1) + j)));				
 				
-				if(j % 10 == 0) {					
-					this.vector_field.add(this.calculateFieldVector(v_temp));
+				if((i % 5 == 0) && (j % 5 == 0)) {					
+					this.vector_field.add(new Vector2D(this.calculateFieldVector(grid.getPoints().get(i * (grid.getCols() + 1) + j))));					
+					//System.out.println("(" + grid.getPoints().get(i * (grid.getCols() + 1) + j).getX() + ", " + grid.getPoints().get(i * (grid.getCols() + 1) + j).getY() + "), " + this.calculateFieldVector(grid.getPoints().get(i * (grid.getCols() + 1) + j)));
 				}
 			}
 		}
 	}
+
 	
 	
 	/*TODO: 
@@ -200,6 +208,10 @@ public class ElectricField {
 	
 	public ArrayList<Charge> getCharges() {
 		return this.charges;
+	}
+	
+	public Grid getGrid() {
+		return this.grid;
 	}
 	
 }

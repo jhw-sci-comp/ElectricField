@@ -64,7 +64,8 @@ public class Vector2D {
 				this.direction = (float) Math.PI / 2.0f;
 			}			
 			else if(this.y < 0.0f) {
-				this.direction = (float) -Math.PI / 2.0f;
+				//this.direction = (float) -Math.PI / 2.0f;
+				this.direction = 3.0f * (float) Math.PI / 2.0f;
 			}
 		}
 		else if(this.x > 0.0f) {
@@ -72,7 +73,8 @@ public class Vector2D {
 				this.direction = (float) Math.atan(this.y / this.x);
 			}			
 			else if(this.y < 0.0f) {
-				this.direction = (float) Math.atan(this.y / this.x);
+				//this.direction = (float) Math.atan(this.y / this.x);
+				this.direction = 2.0f * (float) Math.PI - (float) Math.abs(Math.atan(this.y / this.x));
 			}
 			else if(this.y == 0.0f) {
 				this.direction = 0.0f;
@@ -83,7 +85,8 @@ public class Vector2D {
 				this.direction = (float) (Math.PI -  Math.abs(Math.atan(this.y / this.x)));
 			}			
 			else if(this.y < 0.0f) {
-				this.direction = (float) -(Math.PI -  Math.abs(Math.atan(this.y / this.x)));
+				//this.direction = (float) -(Math.PI -  Math.abs(Math.atan(this.y / this.x)));
+				this.direction = (float) (Math.PI +  Math.abs(Math.atan(this.y / this.x)));
 			}
 			else if(this.y == 0.0f) {
 				this.direction = (float) Math.PI;

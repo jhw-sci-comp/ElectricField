@@ -49,6 +49,7 @@ public abstract class Charge {
 			return false;
 		return true;
 	}
+	
 
 	@Override
 	public String toString() {

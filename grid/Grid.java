@@ -9,16 +9,34 @@ public class Grid {
 	public static final float MAXWIDTH =   0.2f;
 	public static final float MINHEIGHT = -0.2f;
 	public static final float MAXHEIGHT =  0.2f;
-	public static final float DISTANCE = 0.001f;
-	public ArrayList<Vector2D> points = new ArrayList<Vector2D>();	
+	public static final float DISTANCE = 0.005f;
 	
-	private float grid_width;
-	private float grid_height;
+	private ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+	private int rows = (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) / Grid.DISTANCE);
+	private int cols = (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) / Grid.DISTANCE);
+		
+	public Grid() {
+		
+		for(int j = 0; j <= this.cols; j++) {
+			for(int i = 0; i <= this.rows; i++) {
+				//System.out.println(Math.round((Grid.MINWIDTH + i * Grid.DISTANCE) * 1000) / 1000.0f + ", " + Math.round((Grid.MINHEIGHT + j * Grid.DISTANCE) * 1000) / 1000.0f);
+				points.add(new Vector2D(Math.round((Grid.MINWIDTH + i * Grid.DISTANCE) * 1000) / 1000.0f, Math.round((Grid.MINHEIGHT + j * Grid.DISTANCE) * 1000) / 1000.0f));
+			}
+		}		
+		
+	}
 	
 	
-	public Grid(float grid_width, float grid_height) {
-		this.grid_width = grid_width;
-		this.grid_height = grid_height;
+	public ArrayList<Vector2D> getPoints() {
+		return this.points;
+	}
+	
+	public int getRows() {
+		return this.rows;
+	}
+	
+	public int getCols() {
+		return this.cols;
 	}
 	
 }

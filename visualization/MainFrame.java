@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import electricfield.ElectricField;
+import vectorspace2d.Vector2D;
 
 
 public class MainFrame extends JFrame {
@@ -28,7 +29,7 @@ public class MainFrame extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);	
 		
-		this.setVisible(true);
+		//this.setVisible(true);		
 		
 		//System.out.println("size: " + this.getContentPane().getSize());
 		

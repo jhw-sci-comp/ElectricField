@@ -17,6 +17,7 @@ public class Main {
 		
 		ElectricField e = new ElectricField(q1, q2);		
 		Vector2D E = e.calculateFieldVector(new Vector2D(0.05f, 0.0289f));	
+		//Vector2D E = e.calculateFieldVector(new Vector2D(-0.1f, 0.0f));
 		System.out.println(E);
 		System.out.println("E = " + (Math.sqrt(Math.pow(E.getX(), 2) + Math.pow(E.getY(), 2))));
 		
@@ -39,6 +40,14 @@ public class Main {
 		 }
 		*/
 		
+		/*
+		for(float p : e.getPotentials()) {
+			System.out.println("p: " + p);
+		}
+		*/
+		
+		
+		
 		Vector2D p = new Vector2D(-0.2f, 0.0f);
 		System.out.println("field vector: " + e.calculateFieldVector(p));
 		 
@@ -51,7 +60,7 @@ public class Main {
 		
 		System.out.println(q1);
 		
-		//System.out.println("V = " + e.calculateElectricPotential(new Vector2D(0.0f, 0.0f)));	
+		//System.out.println("V = " + e.calculateElectricPotential(new Vector2D(0.05f, 0.0289f)));	
 		
 		MainFrame main_frame = new MainFrame(e);
 		main_frame.setVisible(true);

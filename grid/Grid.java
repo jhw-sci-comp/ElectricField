@@ -12,6 +12,8 @@ public class Grid {
 	public static final float DISTANCE = 0.005f;
 	
 	private ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+	
+	//TODO: rename attributes because it is confusing
 	private int rows = (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) / Grid.DISTANCE);
 	private int cols = (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) / Grid.DISTANCE);
 		

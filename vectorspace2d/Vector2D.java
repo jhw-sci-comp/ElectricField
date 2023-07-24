@@ -1,5 +1,8 @@
 package vectorspace2d;
 
+
+//TODO: Vector2D as generic?
+
 public class Vector2D {
 	
 	private float x;

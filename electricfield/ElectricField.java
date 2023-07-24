@@ -33,6 +33,7 @@ public class ElectricField {
 		float E_y = 0.0f;
 		float factor = 0.0f;
 		float dx, dy;
+		boolean is_charge_in_p = false;
 		
 		//System.out.println("p: " + p);
 		
@@ -46,11 +47,23 @@ public class ElectricField {
 			
 			//System.out.println(i + ": " + (float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
 			
-			factor = charges.get(i).getCharge() / ((float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
-			//System.out.println("factor: " + factor);
 			
-			E_x += factor * dx;
-			E_y += factor * dy;
+			
+			if(dx == 0.0f && dy == 0.0f) {
+				//System.out.println(charges.get(i));
+				is_charge_in_p = true;
+				E_x = 0.0f;
+				E_y = 0.0f;
+			}
+			
+			if(!is_charge_in_p) {
+				factor = charges.get(i).getCharge() / ((float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
+				//System.out.println("factor: " + factor);
+				
+				E_x += factor * dx;
+				E_y += factor * dy;
+			}
+			
 		}
 		
 		factor = 1.0f / (4.0f * (float) Math.PI * EPS_0 * eps_r);		
@@ -66,13 +79,23 @@ public class ElectricField {
 	public float calculateElectricPotential(Vector2D p) {
 		float potential = 0.0f;
 		float dx, dy;
+		boolean is_charge_in_p = false;
 		
 		for(int i = 0; i < charges.size(); i++) {
 			dx = p.getX() - charges.get(i).getLocation().getX();
 			dy = p.getY() - charges.get(i).getLocation().getY();
-			potential += charges.get(i).getCharge() / ((float) (VectorSpace2D.calculate2Norm(new Vector2D(dx, dy))));			
+			
+			if(dx == 0.0f && dy == 0.0f) {
+				//System.out.println(charges.get(i));
+				is_charge_in_p = true;
+				potential = 0.0f;
+			}
+			
+			if(!is_charge_in_p) {
+				potential += charges.get(i).getCharge() / ((float) (VectorSpace2D.calculate2Norm(new Vector2D(dx, dy))));
+			}
 		}
-		
+				
 		return 1.0f / (4.0f * (float) Math.PI * EPS_0 * eps_r) * potential;
 	}
 	

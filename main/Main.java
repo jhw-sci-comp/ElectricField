@@ -15,7 +15,10 @@ public class Main {
 		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   1.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
 		
-		ElectricField e = new ElectricField(q1, q2);		
+		PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
+		PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
+		
+		ElectricField e = new ElectricField(q1, q2, q3, q4);
 		Vector2D E = e.calculateFieldVector(new Vector2D(0.05f, 0.0289f));	
 		//Vector2D E = e.calculateFieldVector(new Vector2D(-0.1f, 0.0f));
 		System.out.println(E);

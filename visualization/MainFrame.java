@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
 	
 	private JPanel layout_panel = new JPanel();	
 	private VisualizationElectricField visual_electric_field;
-	private VisualizationScale visual_scale = new VisualizationScale();
+	private VisualizationScale visual_scale;
 	
 	
 	public MainFrame(ElectricField electric_field) {
@@ -36,6 +36,7 @@ public class MainFrame extends JFrame {
 		layout_panel.setSize(this.getContentPane().getSize().width, this.getContentPane().getSize().height);
 		
 		visual_electric_field = new VisualizationElectricField(layout_panel, electric_field);
+		visual_scale = new VisualizationScale(layout_panel);
 				
 		this.setLayout(new BorderLayout());		
 		layout_panel.setLayout(new GridBagLayout());

@@ -151,13 +151,13 @@ public class VisualizationElectricField extends JPanel {
 			if(c.getCharge() >= 0.0f) {
 				g.setColor(Color.BLACK);
 				g.drawOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
-				g.setColor(Color.BLUE);
+				g.setColor(new Color(0, 0 ,150));
 				g.fillOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
 			}			
 			else {
 				g.setColor(Color.BLACK);
 				g.drawOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
-				g.setColor(Color.RED);
+				g.setColor(new Color(150, 0 ,0));
 				g.fillOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
 			}
 			
@@ -185,6 +185,7 @@ public class VisualizationElectricField extends JPanel {
 				transformed_location.add(transformCoordinate(point_x, point_y).get(1));
 								
 				g2.setColor(Color.DARK_GRAY);
+				//g2.setColor(new Color(90, 90, 90));
 				
 				x_points = new int[3];
 				x_points[0] = transformed_location.get(0) - 5;
@@ -289,37 +290,36 @@ public class VisualizationElectricField extends JPanel {
 		scale_subinterval = (max_scale - min_scale) / 6.0f;
 				
 		
-		if(potential >= min_scale && potential < (min_scale + scale_subinterval)) {			
-			potential_fraction = ((potential - min_scale) / scale_subinterval);
+		if(potential >= min_scale && potential < (min_scale + 2.0f * scale_subinterval)) {			
+			potential_fraction = ((potential - min_scale) / scale_subinterval/2.0f);
 						
 			color_values.add((int) (potential_fraction * 255));			
 			color_values.add(0);
 			color_values.add(0);			
 		}
-		else if(potential >= min_scale + scale_subinterval && potential < (min_scale + 2.0f * scale_subinterval)) {			
-			potential_fraction = ((potential - (min_scale + scale_subinterval)) / scale_subinterval);
+		else if(potential >= min_scale + 2.0f * scale_subinterval && potential < (min_scale + 2.9f * scale_subinterval)) {			
+			potential_fraction = ((potential - (min_scale + 2.0f * scale_subinterval)) / scale_subinterval/0.9f);
 			
 			color_values.add(255);
 			color_values.add((int) (potential_fraction * 255));
 			color_values.add(0);
-		}
-		
-		else if(potential >= min_scale + 2.0f * scale_subinterval && potential < (min_scale + 4.0f * scale_subinterval)) {			
-			potential_fraction = ((potential - (min_scale + 2.0f * scale_subinterval)) / (2.0f * scale_subinterval));
+		}		
+		else if(potential >= min_scale + 2.9f * scale_subinterval && potential < (min_scale + 3.1f * scale_subinterval)) {			
+			potential_fraction = ((potential - (min_scale + 2.9f * scale_subinterval)) / (0.2f * scale_subinterval));
 			
 			color_values.add(255 - (int) (potential_fraction * 255));
 			color_values.add(255);
 			color_values.add((int) (potential_fraction * 255));
 		}
-		else if(potential >= min_scale + 4.0f * scale_subinterval && potential < (min_scale + 5.0f * scale_subinterval)) {			
-			potential_fraction = ((potential - (min_scale + 4.0f * scale_subinterval)) / scale_subinterval);
+		else if(potential >= min_scale + 3.1f * scale_subinterval && potential < (min_scale + 4.0f * scale_subinterval)) {			
+			potential_fraction = ((potential - (min_scale + 3.1f * scale_subinterval)) / scale_subinterval/0.9f);
 			
 			color_values.add(0);
 			color_values.add(255 - (int) (potential_fraction * 255));
 			color_values.add(255);
 		}
-		else if(potential >= min_scale + 5.0f * scale_subinterval && potential <= max_scale) {			
-			potential_fraction = ((potential - (min_scale + 5.0f * scale_subinterval)) / scale_subinterval);
+		else if(potential >= min_scale + 4.0f * scale_subinterval && potential <= max_scale) {			
+			potential_fraction = ((potential - (min_scale + 4.0f * scale_subinterval)) / scale_subinterval/2.0f);
 			
 			color_values.add(0);
 			color_values.add(0);

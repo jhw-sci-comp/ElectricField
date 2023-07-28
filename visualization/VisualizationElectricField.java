@@ -3,6 +3,7 @@ package visualization;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -10,6 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import charge.Charge;
 import electricfield.ElectricField;
@@ -21,13 +23,16 @@ public class VisualizationElectricField extends JPanel {
 	
 	private int x_shift;
 	private int y_shift;
-	private int scaling;
-	private JPanel layout_panel;
+	private int scaling;	
 	private ElectricField electric_field;
 	
-	public VisualizationElectricField(JPanel layout_panel, ElectricField electric_field) {
-		 this.layout_panel = layout_panel;		 
-		 this.electric_field = electric_field;		 
+	private JFrame main_frame;
+	
+	//public VisualizationElectricField(JPanel layout_panel, ElectricField electric_field) {
+	public VisualizationElectricField(JFrame main_window, ElectricField electric_field) {		 		 
+		 this.electric_field = electric_field;
+		 
+		 this.main_frame = main_window;
 
 		 /*
 		 for(Vector2D v : electric_field.getVectorField()) {
@@ -50,11 +55,11 @@ public class VisualizationElectricField extends JPanel {
 		
 		scaling = (int) (800 /  (Grid.MAXWIDTH - Grid.MINWIDTH));
 		
-		//System.out.println("scaling: " + scaling);
+		//System.out.println("scaling: " + scaling);		
 		
-		this.setSize((int) (0.9 * layout_panel.getWidth()), layout_panel.getHeight());
+		this.setSize(this.main_frame.getWidth(), this.main_frame.getHeight());
 		x_shift = (int) (this.getWidth() / 2 - (Grid.MAXWIDTH - Grid.MINWIDTH) * scaling / 2);
-		y_shift = (int) (this.getHeight() / 2 - (Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling / 2);
+		y_shift = (int) (this.getHeight() / 2.2 - (Grid.MAXHEIGHT - Grid.MINHEIGHT) * scaling / 2);
 		
 		this.setBackground(Color.WHITE);
 		
@@ -62,6 +67,8 @@ public class VisualizationElectricField extends JPanel {
 		this.drawGrid(g);		
 		this.drawElectricFieldVectors(g);
 		this.drawCharges(g);
+		
+		this.drawScale(g);
 	}
 	
 	
@@ -264,6 +271,9 @@ public class VisualizationElectricField extends JPanel {
 		}
 	}
 	
+	
+	
+	
 	private ArrayList<Integer> getPotentialColor(float potential) {
 		ArrayList<Integer> color_values = new ArrayList<Integer>();			
 		
@@ -301,7 +311,7 @@ public class VisualizationElectricField extends JPanel {
 		if(potential >= min_scale && potential < (min_scale + 2.0f * scale_subinterval)) {			
 			potential_fraction = ((potential - min_scale) / scale_subinterval/2.0f);
 						
-			color_values.add((int) (potential_fraction * 255));			
+			color_values.add((int) (55 + potential_fraction * 200));			
 			color_values.add(0);
 			color_values.add(0);			
 		}
@@ -328,10 +338,10 @@ public class VisualizationElectricField extends JPanel {
 		}
 		else if(potential >= min_scale + 4.0f * scale_subinterval && potential <= max_scale) {			
 			potential_fraction = ((potential - (min_scale + 4.0f * scale_subinterval)) / scale_subinterval/2.0f);
-			
+						
 			color_values.add(0);
 			color_values.add(0);
-			color_values.add(255 - (int) (potential_fraction * 255));
+			color_values.add(255 - (int) (potential_fraction * 200));
 		}
 		else {
 			color_values.add(255);
@@ -341,6 +351,146 @@ public class VisualizationElectricField extends JPanel {
 		
 				
 		return color_values;
+	}
+	
+	private void drawScale(Graphics g) {
+		ArrayList<Integer> color_1_values = new ArrayList<Integer>();
+		ArrayList<Integer> color_2_values = new ArrayList<Integer>();
+		Graphics2D g2d = (Graphics2D)g;
+		GradientPaint gp;
+                
+        Object min_potential_obj, max_potential_obj;
+		float min_potential;     // minimum potential
+		float max_potential;     // maximum potential
+		float min_scale;         // minimum scale value
+		float max_scale;         // maximum scale value
+				
+		float scale_subinterval;
+		
+		int y_pos_1, y_pos_2;
+		
+		Font font = g2d.getFont().deriveFont( 18.0f );
+		
+		
+		min_potential_obj = Collections.min(this.electric_field.getPotentials());
+		min_potential = Float.parseFloat(min_potential_obj.toString());		
+		max_potential_obj = Collections.max(this.electric_field.getPotentials());
+		max_potential = Float.parseFloat(max_potential_obj.toString());
+		
+		
+		
+		if(Math.max(Math.abs(min_potential), Math.abs(max_potential)) % 6.0f != 0.0f) {
+			min_scale = -((int) (Math.max(Math.abs(min_potential), Math.abs(max_potential)) / 6.0f) + 1.0f) * 6.0f;
+			max_scale =  ((int) (Math.max(Math.abs(min_potential), Math.abs(max_potential)) / 6.0f) + 1.0f) * 6.0f;
+		}
+		else {
+			min_scale = -((int) (Math.max(Math.abs(min_potential), Math.abs(max_potential)) / 6.0f)) * 6.0f;
+			max_scale =  ((int) (Math.max(Math.abs(min_potential), Math.abs(max_potential)) / 6.0f)) * 6.0f;
+		}
+		
+		scale_subinterval = (max_scale - min_scale) / 6.0f;
+        
+		//System.out.println("max_scale: " + max_scale);
+		//System.out.println("max_potential: " + max_potential);
+        //System.out.println("color 1: " + (int)(((max_potential - (min_scale + 4.0f * scale_subinterval)) / scale_subinterval/2.0f) * 250));
+		//System.out.println("y: " + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800));
+		color_1_values.add(0);
+		color_1_values.add(0);
+		color_1_values.add(55);
+		
+		color_2_values.add(0);
+		color_2_values.add(0);
+		color_2_values.add(255);
+		y_pos_1 = y_shift;
+		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		gp = new GradientPaint(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
+        g2d.setPaint(gp);        
+        g2d.fillRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_shift, 50, y_pos_2 - y_shift);
+        
+        color_1_values.clear();
+        color_2_values.clear();
+        
+         
+        color_1_values.add(0);
+		color_1_values.add(0);
+		color_1_values.add(255);	
+		
+		color_2_values.add(0);
+		color_2_values.add(255);
+		color_2_values.add(255);
+		y_pos_1 = y_pos_2;
+		//y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		gp = new GradientPaint(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
+        g2d.setPaint(gp);        
+        g2d.fillRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, 50, y_pos_2 - y_pos_1);
+        
+        color_1_values.clear();
+        color_2_values.clear();
+        
+        //System.out.println("color 1: " + ((((min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (0.2f * scale_subinterval)) * 255));
+        color_1_values.add(0);
+		color_1_values.add(255);
+		color_1_values.add(255);	
+		
+		color_2_values.add(255);
+		color_2_values.add(255);
+		color_2_values.add(0);	
+		y_pos_1 = y_pos_2;
+		//y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval) + (min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		gp = new GradientPaint(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
+        g2d.setPaint(gp);        
+        g2d.fillRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, 50, y_pos_2 - y_pos_1);
+        
+        color_1_values.clear();
+        color_2_values.clear();
+        
+              
+        color_1_values.add(255);
+		color_1_values.add(255);
+		color_1_values.add(0);	
+		
+		color_2_values.add(255);
+		color_2_values.add(0);
+		color_2_values.add(0);	
+		
+		y_pos_1 = y_pos_2;		
+		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval) + (min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval) + (min_scale + 2.9f * scale_subinterval) - (min_scale + 2.0f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		gp = new GradientPaint(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
+        g2d.setPaint(gp);        
+        g2d.fillRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, 50, y_pos_2 - y_pos_1);
+        
+        color_1_values.clear();
+        color_2_values.clear();
+                
+        
+        color_1_values.add(255);
+		color_1_values.add(0);
+		color_1_values.add(0);	
+		
+		color_2_values.add(55);
+		color_2_values.add(0);
+		color_2_values.add(0);	
+		
+		y_pos_1 = y_pos_2;		
+		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval) + (min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval) + (min_scale + 2.9f * scale_subinterval) - (min_scale + 2.0f * scale_subinterval) + (min_scale + 2.0f * scale_subinterval) - min_scale) / (max_scale - min_scale) * 800);
+		gp = new GradientPaint(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
+        g2d.setPaint(gp);        
+        g2d.fillRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_pos_1, 50, y_pos_2 - y_pos_1);
+        
+        color_1_values.clear();
+        color_2_values.clear();
+        
+        
+       g2d.setColor(Color.darkGray);
+       g2d.drawRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_shift, 50, 800);
+       
+       //System.out.println("max potential: " + max_potential + ", min potential: " + min_potential);
+       
+       g2d.drawString(Float.toString(max_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 10);
+       g2d.drawString(Float.toString(min_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 800);
+	
 	}
 	
 	

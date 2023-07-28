@@ -20,7 +20,7 @@ public class MainFrame extends JFrame {
 	
 	private JPanel layout_panel = new JPanel();	
 	private VisualizationElectricField visual_electric_field;
-	private VisualizationScale visual_scale;
+	//private VisualizationScale visual_scale;
 	
 	
 	public MainFrame(ElectricField electric_field) {
@@ -35,10 +35,14 @@ public class MainFrame extends JFrame {
 		
 		layout_panel.setSize(this.getContentPane().getSize().width, this.getContentPane().getSize().height);
 		
-		visual_electric_field = new VisualizationElectricField(layout_panel, electric_field);
-		visual_scale = new VisualizationScale(layout_panel);
+		//visual_electric_field = new VisualizationElectricField(layout_panel, electric_field);
+		visual_electric_field = new VisualizationElectricField(this, electric_field);
+		//visual_scale = new VisualizationScale(layout_panel);
 				
-		this.setLayout(new BorderLayout());		
+		this.setLayout(new BorderLayout());	
+		this.getContentPane().add(visual_electric_field, BorderLayout.CENTER);
+		
+		/*
 		layout_panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		
@@ -60,7 +64,7 @@ public class MainFrame extends JFrame {
 		
 		
 		this.getContentPane().add(layout_panel, BorderLayout.CENTER);
-			
+		*/
 		
 		//System.out.println("layout_panel width: " + layout_panel.getWidth());
 		//System.out.println("layout_panel height: " + layout_panel.getHeight());								

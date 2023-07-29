@@ -13,6 +13,9 @@ import java.util.Collections;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import com.sun.javafx.binding.StringFormatter;
+
 import charge.Charge;
 import electricfield.ElectricField;
 import grid.Grid;
@@ -366,10 +369,13 @@ public class VisualizationElectricField extends JPanel {
 		float max_scale;         // maximum scale value
 				
 		float scale_subinterval;
-		
+				
 		int y_pos_1, y_pos_2;
 		
+		int scale_tick_range;
+		
 		Font font = g2d.getFont().deriveFont( 18.0f );
+		
 		
 		
 		min_potential_obj = Collections.min(this.electric_field.getPotentials());
@@ -486,10 +492,22 @@ public class VisualizationElectricField extends JPanel {
        g2d.setColor(Color.darkGray);
        g2d.drawRect(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 100, y_shift, 50, 800);
        
-       //System.out.println("max potential: " + max_potential + ", min potential: " + min_potential);
+       System.out.println("max potential: " + max_potential);
        
-       g2d.drawString(Float.toString(max_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 10);
-       g2d.drawString(Float.toString(min_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 800);
+       if(max_potential % 5.0f != 0.0f) {
+    	   scale_tick_range = (int) ((max_potential / 5.0f) - 1);
+       }
+       else {
+    	   scale_tick_range = (int) (max_potential / 5.0f);
+       }
+       
+       for(int i = 1; i <= 5; i++) {
+    	   g2d.drawLine(x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 150, y_shift + i * 400 / 5 + 5 , x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 160, y_shift + i * 400 / 5 + 5);
+    	   g2d.drawString(Float.toString(5 * scale_tick_range - i * scale_tick_range), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + i * 400 / 5 + 10);
+       }
+              
+       
+       //g2d.drawString(Float.toString(min_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 800);
 	
 	}
 	

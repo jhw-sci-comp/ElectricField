@@ -5,27 +5,31 @@ import java.util.ArrayList;
 import vectorspace2d.Vector2D;
 
 public class Grid {
-	public static final float MINWIDTH =  -0.2f;  // -0.2 m
-	public static final float MAXWIDTH =   0.2f;
-	public static final float MINHEIGHT = -0.2f;
-	public static final float MAXHEIGHT =  0.2f;
+	public static final float X_MIN =  -0.2f;  // -0.2 m
+	public static final float X_MAX =   0.2f;
+	public static final float Y_MIN = -0.2f;
+	public static final float Y_MAX =  0.2f;
 	public static final float DISTANCE = 0.005f;
 	
 	private ArrayList<Vector2D> points = new ArrayList<Vector2D>();
+	public float width = 0.0f;
+	public float height = 0.0f;
 	
 	//TODO: rename attributes because it is confusing
-	private int rows = (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) / Grid.DISTANCE);
-	private int cols = (int) ((Grid.MAXHEIGHT - Grid.MINHEIGHT) / Grid.DISTANCE);
+	private int rows = (int) ((Grid.X_MAX - Grid.X_MIN) / Grid.DISTANCE);
+	private int cols = (int) ((Grid.Y_MAX - Grid.Y_MIN) / Grid.DISTANCE);
 		
 	public Grid() {
 		
 		for(int j = 0; j <= this.cols; j++) {
 			for(int i = 0; i <= this.rows; i++) {
 				//System.out.println(Math.round((Grid.MINWIDTH + i * Grid.DISTANCE) * 1000) / 1000.0f + ", " + Math.round((Grid.MINHEIGHT + j * Grid.DISTANCE) * 1000) / 1000.0f);
-				points.add(new Vector2D(Math.round((Grid.MINWIDTH + i * Grid.DISTANCE) * 1000) / 1000.0f, Math.round((Grid.MINHEIGHT + j * Grid.DISTANCE) * 1000) / 1000.0f));
+				points.add(new Vector2D(Math.round((Grid.X_MIN + i * Grid.DISTANCE) * 1000) / 1000.0f, Math.round((Grid.Y_MIN + j * Grid.DISTANCE) * 1000) / 1000.0f));
 			}
-		}		
+		}
 		
+		this.width = Grid.X_MIN - Grid.X_MIN;
+		this.height = Grid.Y_MAX - Grid.Y_MIN;
 	}
 	
 	
@@ -39,6 +43,14 @@ public class Grid {
 	
 	public int getCols() {
 		return this.cols;
+	}
+	
+	public float getWidth() {
+		return this.width;
+	}
+	
+	public float getHeight() {
+		return this.height;
 	}
 	
 }

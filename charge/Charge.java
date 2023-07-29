@@ -30,7 +30,7 @@ public abstract class Charge {
 		result = prime * result + Float.floatToIntBits(value);
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

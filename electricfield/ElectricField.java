@@ -1,6 +1,7 @@
 package electricfield;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import charge.Charge;
 import grid.Grid;
@@ -18,6 +19,9 @@ public class ElectricField {
 	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();
 	private ArrayList<Float> potentials = new ArrayList<Float>();
 	private Grid grid = new Grid();
+	
+	private float min_potential = 0.0f;
+	private float max_potential = 0.0f;
 	
 	public ElectricField(Charge... charges) {
 		for(Charge c : charges) {
@@ -111,8 +115,10 @@ public class ElectricField {
 				}
 			}
 		}
+		
+		this.calculateMinPotential();
+		this.calculateMaxPotential();
 	}
-
 	
 	
 	/*TODO: 
@@ -161,30 +167,30 @@ public class ElectricField {
 			
 			//System.out.println("r_new: " + r_new.hashCode());
 			
-			if(r_new.getX() >= Grid.MINWIDTH && r_new.getX() <= Grid.MAXWIDTH && r_new.getY() >= Grid.MINHEIGHT && r_new.getY() <= Grid.MAXHEIGHT) {				
+			if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
 				field_line_temp.getPoints().add(new Vector2D(r_new));
 				
-				if(r_new.getX() == Grid.MINWIDTH || r_new.getX() == Grid.MAXWIDTH || r_new.getY() == Grid.MINHEIGHT || r_new.getY() == Grid.MAXHEIGHT) {
+				if(r_new.getX() == Grid.X_MIN || r_new.getX() == Grid.X_MAX || r_new.getY() == Grid.Y_MIN || r_new.getY() == Grid.Y_MAX) {
 					valid_step = false;
 				}
 			}
-			else if(r_new.getX() < Grid.MINWIDTH) {
-				r_new.setX(Grid.MINWIDTH);
+			else if(r_new.getX() < Grid.X_MIN) {
+				r_new.setX(Grid.X_MIN);
 				field_line_temp.getPoints().add(new Vector2D(r_new));
 				valid_step = false;
 			}			
-			else if(r_new.getX() > Grid.MAXWIDTH) {
-				r_new.setX(Grid.MAXWIDTH);
+			else if(r_new.getX() > Grid.X_MAX) {
+				r_new.setX(Grid.X_MAX);
 				field_line_temp.getPoints().add(new Vector2D(r_new));
 				valid_step = false;
 			}			
-			else if(r_new.getY() < Grid.MINHEIGHT) {
-				r_new.setY(Grid.MINHEIGHT);
+			else if(r_new.getY() < Grid.Y_MIN) {
+				r_new.setY(Grid.Y_MIN);
 				field_line_temp.getPoints().add(new Vector2D(r_new));
 				valid_step = false;
 			}			
-			else if(r_new.getY() > Grid.MAXHEIGHT) {
-				r_new.setY(Grid.MAXHEIGHT);
+			else if(r_new.getY() > Grid.Y_MAX) {
+				r_new.setY(Grid.Y_MAX);
 				field_line_temp.getPoints().add(new Vector2D(r_new));
 				valid_step = false;
 			}
@@ -215,6 +221,28 @@ public class ElectricField {
 		field_lines.add(new FieldLine(field_line_temp));
 		field_line_temp.getPoints().clear();
 		
+	}
+	
+	private void calculateMinPotential() {
+		Object min_potential_obj;
+		
+		min_potential_obj = Collections.min(this.potentials);
+		min_potential = Float.parseFloat(min_potential_obj.toString());		
+	}
+	
+	private void calculateMaxPotential() {
+		Object max_potential_obj;
+		
+		max_potential_obj = Collections.max(this.potentials);
+		max_potential = Float.parseFloat(max_potential_obj.toString());
+	}
+	
+	public float getMinPotential() {
+		return this.min_potential;
+	}
+	
+	public float getMaxPotential() {
+		return this.max_potential;
 	}
 	
 	public ArrayList<FieldLine> getFieldLines() {

@@ -18,6 +18,7 @@ import com.sun.javafx.binding.StringFormatter;
 
 import charge.Charge;
 import electricfield.ElectricField;
+import electricfield.FieldLine;
 import grid.Grid;
 import vectorspace2d.Vector2D;
 
@@ -43,9 +44,7 @@ public class VisualizationElectricField extends JPanel {
 		 this.main_frame = main_window;
 		 
 		 this.min_potential = this.electric_field.getMinPotential();
-		 this.max_potential = this.electric_field.getMaxPotential();
-		 
-		 
+		 this.max_potential = this.electric_field.getMaxPotential();		 
 	}
 
 	@Override
@@ -65,11 +64,38 @@ public class VisualizationElectricField extends JPanel {
 		this.drawPotentials(g);
 		this.drawGrid(g);		
 		this.drawElectricFieldVectors(g);
-		this.drawCharges(g);		
+		
+		this.drawFieldLines(g);
+		
+		this.drawCharges(g);
 		this.drawScale(g);
 	}
 	
 	
+	private Vector2D transformCoordinate(float x, float y){
+		float x_transformed, y_transformed;	
+		
+		x_transformed = x_shift + (int) ((Math.abs(Grid.X_MIN) + x) * scaling);
+		y_transformed = y_shift + (int) ((Grid.Y_MAX - y) * scaling);
+		
+		//System.out.println("transformeCoordinate(): " + transformed_coordinates.get(0));
+		
+		return new Vector2D(x_transformed, y_transformed);
+	}
+	
+	private Vector2D transformCoordinate(Vector2D point){
+		float x_transformed, y_transformed;	
+		
+		x_transformed = x_shift + (int) ((Math.abs(Grid.X_MIN) + point.getX()) * scaling);
+		y_transformed = y_shift + (int) ((Grid.Y_MAX - point.getY()) * scaling);
+		
+		//System.out.println("transformeCoordinate(): " + transformed_coordinates.get(0));
+		
+		return new Vector2D(x_transformed, y_transformed);
+	}
+	
+	
+	/*
 	private ArrayList<Integer> transformCoordinate(float x, float y){
 		ArrayList<Integer> transformed_coordinates = new ArrayList<Integer>();		
 		
@@ -80,6 +106,7 @@ public class VisualizationElectricField extends JPanel {
 		
 		return transformed_coordinates;
 	}
+	*/
 	
 	
 	private int transformScale(float range) {
@@ -153,28 +180,29 @@ public class VisualizationElectricField extends JPanel {
 	
 	
 	private void drawCharges(Graphics g) {
-		ArrayList<Integer> transformed_location = new ArrayList<Integer>();		
+		//ArrayList<Integer> transformed_location = new ArrayList<Integer>();
+		Vector2D transformed_location = new Vector2D(0.0f, 0.0f);
 		
 		for(Charge c : electric_field.getCharges()) {
-			transformed_location.add(transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).get(0));
-			transformed_location.add(transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).get(1));
+			transformed_location.setX((int) transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).getX());
+			transformed_location.setY((int) transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).getY());
 			
 			//System.out.println("transformed_location: " + transformed_location.get(0) + ", " + transformed_location.get(1));
 			
 			if(c.getCharge() >= 0.0f) {
-				g.setColor(Color.BLACK);
-				g.drawOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
 				g.setColor(new Color(0, 0 ,150));
-				g.fillOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
+				g.fillOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);
+				g.setColor(Color.BLACK);
+				g.drawOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);				
 			}			
 			else {
-				g.setColor(Color.BLACK);
-				g.drawOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
 				g.setColor(new Color(150, 0 ,0));
-				g.fillOval(transformed_location.get(0) - 5, transformed_location.get(1) - 5, 10, 10);
+				g.fillOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);
+				g.setColor(Color.BLACK);
+				g.drawOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);				
 			}
 			
-			transformed_location.clear();
+			//transformed_location.clear();
 		}
 	}
 	
@@ -194,8 +222,8 @@ public class VisualizationElectricField extends JPanel {
 			for(int j = 0; j <= this.electric_field.getGrid().getCols(); j += 5) {
 				point_x = this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getX();
 				point_y = this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getY();
-				transformed_location.add(transformCoordinate(point_x, point_y).get(0));
-				transformed_location.add(transformCoordinate(point_x, point_y).get(1));
+				transformed_location.add((int) transformCoordinate(point_x, point_y).getX());
+				transformed_location.add((int) transformCoordinate(point_x, point_y).getY());
 								
 				g2.setColor(Color.DARK_GRAY);
 				//g2.setColor(new Color(90, 90, 90));
@@ -485,11 +513,22 @@ public class VisualizationElectricField extends JPanel {
     	   g2d.drawString(Float.toString(- i * scale_tick_range), x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 170, y_shift + 400 + i * 400 / 5 + 10);
        }
        
-       g2d.drawString("potential [V]", x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 90, y_shift + 855);
+       g2d.drawString("electric potential [V]", x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 50, y_shift + 855);
               
        
        //g2d.drawString(Float.toString(min_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 800);
 	
+	}
+	
+	private void drawFieldLines(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		
+		g2d.setColor(Color.RED);
+		for(FieldLine f : this.electric_field.getFieldLines()) {
+			for(int k = 0; k < f.getPoints().size() - 1; k++) {
+				g2d.drawLine((int) this.transformCoordinate(f.getPoints().get(k)).getX(), (int) this.transformCoordinate(f.getPoints().get(k)).getY(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getX(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getY());
+			}
+		}
 	}
 	
 	

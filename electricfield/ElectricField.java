@@ -132,7 +132,106 @@ public class ElectricField {
 		boolean valid_step = true;
 		float step_size = 0.001f;
 		
+		
+		/* 
+		for(int i = 0; i < 8; i++) {
+			v_start.setX(charges.get(0).getLocation().getX());
+			v_start.setY(charges.get(0).getLocation().getY());
+			
+			r_new.setX(charges.get(0).getLocation().getX());
+			r_new.setY(charges.get(0).getLocation().getY());
+			
+			r_temp.setX(charges.get(0).getLocation().getX());
+			r_temp.setY(charges.get(0).getLocation().getY());		
+			
+			field_line_temp.addPoint(new Vector2D(v_start));
+			
+			System.out.println("angle: " + (i /8.0) + " * PI");
+			
+			if(charges.get(0).getCharge() >= 0.0f) {
+				r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D((float) (step_size * Math.cos(i * Math.PI / 8.0)), (float) (step_size * Math.sin(i * Math.PI / 8.0)))), step_size,  (r) -> this.calculateFieldVector(r)));
+			}
+			else {
+				r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D((float) (step_size * Math.cos(i * Math.PI / 8.0)), (float) (step_size * Math.sin(i * Math.PI / 8.0)))), step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
+			}
+			
+			System.out.println("r_new: " + r_new);
+					
+			
+			field_line_temp.addPoint(new Vector2D(r_new));	
+			
+			
+			while(valid_step) {
 				
+				if(charges.get(0).getCharge() >= 0.0f) {
+					r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
+				}
+				else {
+					r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
+				}
+				
+				//System.out.println("r_new: " + r_new.hashCode());
+				
+				if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
+					field_line_temp.getPoints().add(new Vector2D(r_new));
+					
+					if(r_new.getX() == Grid.X_MIN || r_new.getX() == Grid.X_MAX || r_new.getY() == Grid.Y_MIN || r_new.getY() == Grid.Y_MAX) {
+						valid_step = false;
+					}
+				}
+				else if(r_new.getX() < Grid.X_MIN) {
+					r_new.setX(Grid.X_MIN);
+					field_line_temp.getPoints().add(new Vector2D(r_new));
+					valid_step = false;
+				}			
+				else if(r_new.getX() > Grid.X_MAX) {
+					r_new.setX(Grid.X_MAX);
+					field_line_temp.getPoints().add(new Vector2D(r_new));
+					valid_step = false;
+				}			
+				else if(r_new.getY() < Grid.Y_MIN) {
+					r_new.setY(Grid.Y_MIN);
+					field_line_temp.getPoints().add(new Vector2D(r_new));
+					valid_step = false;
+				}			
+				else if(r_new.getY() > Grid.Y_MAX) {
+					r_new.setY(Grid.Y_MAX);
+					field_line_temp.getPoints().add(new Vector2D(r_new));
+					valid_step = false;
+				}
+				
+				for(Charge c : charges) {
+					
+					if(charges.get(0).getCharge() >= 0.0f) {
+						r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
+					}
+					else {
+						r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
+					}
+					
+					r_temp = r_temp.add(r_new.scale(-1.0f));
+					
+					//System.out.println("r_new: " + r_new);
+					//System.out.println("r_temp: " + r_temp);
+					
+					if(r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {
+						field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
+						valid_step = false;
+					}
+				}			
+				
+			}		
+			
+			
+			field_lines.add(new FieldLine(field_line_temp));
+			field_line_temp.getPoints().clear();
+		}
+		
+		System.out.println("field lines: " + field_lines.size());
+		*/
+		
+		
+		
 		v_start.setX(charges.get(0).getLocation().getX());
 		v_start.setY(charges.get(0).getLocation().getY());
 		
@@ -220,6 +319,7 @@ public class ElectricField {
 		
 		field_lines.add(new FieldLine(field_line_temp));
 		field_line_temp.getPoints().clear();
+		
 		
 	}
 	

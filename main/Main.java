@@ -35,13 +35,14 @@ public class Main {
 		
 		e.calculateFieldLines();
 				
-		/*
+		
 		for(FieldLine f : e.getFieldLines()) {
+			System.out.println("field line ");
 			for(Vector2D v : f.getPoints()) {
 				System.out.println(v);
 			}
 		}
-		*/
+		
 		
 				
 		e.calculateVectorField();

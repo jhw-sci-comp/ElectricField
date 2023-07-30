@@ -523,7 +523,7 @@ public class VisualizationElectricField extends JPanel {
 	private void drawFieldLines(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		
-		g2d.setColor(Color.RED);
+		g2d.setColor(Color.BLACK);
 		for(FieldLine f : this.electric_field.getFieldLines()) {
 			for(int k = 0; k < f.getPoints().size() - 1; k++) {
 				g2d.drawLine((int) this.transformCoordinate(f.getPoints().get(k)).getX(), (int) this.transformCoordinate(f.getPoints().get(k)).getY(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getX(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getY());

@@ -22,15 +22,18 @@ public class Main {
 		//PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
 		//PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
 		
+		ElectricField e = new ElectricField(q1, q2);
+		
+		
 		/*
 		// Example 3:
 		PointCharge q1 = new PointCharge(-0.1f,  0.1f,  -1.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f,  0.1f,   1.0E-6f);		
 		PointCharge q3 = new PointCharge( 0.1f, -0.1f,  -1.0E-6f);
 		PointCharge q4 = new PointCharge(-0.1f, -0.1f,   1.0E-6f);
+				
+		ElectricField e = new ElectricField(q1, q2, q3, q4);
 		*/
-		
-		ElectricField e = new ElectricField(q1, q2);
 		
 		
 		e.calculateFieldLines();

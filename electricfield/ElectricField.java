@@ -2,8 +2,10 @@ package electricfield;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import charge.Charge;
+import charge.PointCharge;
 import grid.Grid;
 import ode.ODE;
 //import grid.Grid;
@@ -131,10 +133,39 @@ public class ElectricField {
 		FieldLine field_line_temp = new FieldLine();
 		boolean valid_step = true;
 		float step_size = 0.001f;
+		float angle = (float) (Math.PI / 8.0);
+				
+		Vector2D r_old = new Vector2D(0.0f, 0.0f);
+		Vector2D dr_old = new Vector2D(0.0f, 0.0f);
+		Vector2D dr_new = new Vector2D(0.0f, 0.0f);	
+		
+		Vector2D endpoint_fieldline = new Vector2D(0.0f, 0.0f);
+		
+		
+		HashMap<Charge, ArrayList<Boolean>> charges_field_line_availability = new HashMap<Charge, ArrayList<Boolean>>();
 		
 		
 		for(Charge charge : this.charges) {
-			for(int i = 0; i < 16; i++) {
+			if(charge instanceof PointCharge) {
+				charges_field_line_availability.put(charge, new ArrayList<Boolean>());
+				
+				for(int k = 0; k < 16; k++) {
+					charges_field_line_availability.get(charge).add(true);
+				}
+			}
+		}
+		
+		//System.out.println(charges_field_line_enumeration);
+		
+		
+		//TODO: introduce attribute that keeps track of the field lines that have already been calculated
+		
+		for(Charge charge : this.charges) {			
+			
+			//System.out.println(charge);
+			
+			for(int i = 0; i < 16; i++) {				
+				
 				v_start.setX(charge.getLocation().getX());
 				v_start.setY(charge.getLocation().getY());
 				
@@ -147,15 +178,20 @@ public class ElectricField {
 				field_line_temp.addPoint(new Vector2D(v_start));
 				
 				
+				//System.out.println("angle: " + i);
+				
+				charges_field_line_availability.get(charge).set(i, false);
+				//System.out.println(charges_field_line_availability);
+				
 				
 				if(charge.getCharge() >= 0.0f) {
-					r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(step_size * (float) Math.cos(i * Math.PI / 8.0), step_size * (float) Math.sin(i * Math.PI / 8.0))), step_size,  (r) -> this.calculateFieldVector(r)));
+					r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(step_size * (float) Math.cos(i * angle), step_size * (float) Math.sin(i * angle))), step_size,  (r) -> this.calculateFieldVector(r)));
 				}
 				else {
-					r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(step_size * (float) Math.cos(i * Math.PI / 8.0), step_size * (float) Math.sin(i * Math.PI / 8.0))), step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
+					r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(step_size * (float) Math.cos(i * angle), step_size * (float) Math.sin(i * angle))), step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
 				}
 				
-				System.out.println("r_new: " + r_new);
+				//System.out.println("r_new: " + r_new);
 						
 				
 				field_line_temp.addPoint(new Vector2D(r_new));	
@@ -163,18 +199,31 @@ public class ElectricField {
 				
 				while(valid_step) {
 					
+										
+					
+					r_old.copy(r_new);
+					dr_old.copy(dr_new);
+									
+					
+					
 					if(charge.getCharge() >= 0.0f) {
 						r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
 					}
 					else {
 						r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
 					}
+										
 					
-					//System.out.println("r_new: " + r_new.hashCode());
+					
+					dr_new.copy(r_new);					
+					dr_new.copy(r_new.add(r_old.scale(-1)));
+					dr_new.copy(dr_new.scale(1.0f / VectorSpace2D.calculate2Norm(dr_new)));
+													
 					
 					if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
 						field_line_temp.getPoints().add(new Vector2D(r_new));
 						
+	//TODO: Careful: special case when charge is on border will not work with this!!!!!!!!!!!!!!!!!!!
 						if(r_new.getX() == Grid.X_MIN || r_new.getX() == Grid.X_MAX || r_new.getY() == Grid.Y_MIN || r_new.getY() == Grid.Y_MAX) {
 							valid_step = false;
 						}
@@ -199,6 +248,7 @@ public class ElectricField {
 						field_line_temp.getPoints().add(new Vector2D(r_new));
 						valid_step = false;
 					}
+										
 					
 					for(Charge c : charges) {
 						
@@ -215,113 +265,48 @@ public class ElectricField {
 						//System.out.println("r_temp: " + r_temp);
 						
 						if(r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {
-							field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
+							endpoint_fieldline.copy(r_new.add(c.getLocation().scale(-1.0f)));
+							
+							for(int j = 0; j < 16; j++) {
+								if(endpoint_fieldline.getDirection() >= j * angle && endpoint_fieldline.getDirection() < (j + 1) * angle) {
+									if(charges_field_line_availability.get(c).get(j)) {
+										field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
+										charges_field_line_availability.get(c).set(j, false);
+									}
+									else {
+										field_line_temp.getPoints().clear();
+										//charges_field_line_availability.get(c).set(j, false);
+									}
+								}
+							}							
+							
 							valid_step = false;
 						}
-					}			
+					}
+					
+					// if the current step points in the opposite direction as the previous step discard field line
+					if(dr_new.add(dr_old).scale(-1).getX() == 0.0f && dr_new.add(dr_old).scale(-1).getY() == 0.0f) {
+						valid_step = false;
+						field_line_temp.getPoints().clear();
+					}
 					
 				}		
 				
-				
-				field_lines.add(new FieldLine(field_line_temp));
+				if(!field_line_temp.getPoints().isEmpty()) {
+					field_lines.add(new FieldLine(field_line_temp));
+				}
 				field_line_temp.getPoints().clear();
 				valid_step = true;
-			}
+				
+				
+			}//end for i
+			
+			
+			
 		}
 		
-		System.out.println("field lines: " + field_lines.size());
+		//System.out.println("field lines: " + field_lines.size());
 		
-		
-		
-		/*
-		v_start.setX(charges.get(0).getLocation().getX());
-		v_start.setY(charges.get(0).getLocation().getY());
-		
-		r_new.setX(charges.get(0).getLocation().getX());
-		r_new.setY(charges.get(0).getLocation().getY());
-		
-		r_temp.setX(charges.get(0).getLocation().getX());
-		r_temp.setY(charges.get(0).getLocation().getY());		
-		
-		field_line_temp.addPoint(new Vector2D(v_start));
-		
-		
-		if(charges.get(0).getCharge() >= 0.0f) {
-			r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(0.0f, step_size)), step_size,  (r) -> this.calculateFieldVector(r)));
-		}
-		else {
-			r_new.copy(ODE.solveODEStep(r_new.add(new Vector2D(0.0f, step_size)), step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
-		}
-				
-		
-		field_line_temp.addPoint(new Vector2D(r_new));	
-		
-		
-		while(valid_step) {
-			
-			if(charges.get(0).getCharge() >= 0.0f) {
-				r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
-			}
-			else {
-				r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
-			}
-			
-			//System.out.println("r_new: " + r_new.hashCode());
-			
-			if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
-				field_line_temp.getPoints().add(new Vector2D(r_new));
-				
-				if(r_new.getX() == Grid.X_MIN || r_new.getX() == Grid.X_MAX || r_new.getY() == Grid.Y_MIN || r_new.getY() == Grid.Y_MAX) {
-					valid_step = false;
-				}
-			}
-			else if(r_new.getX() < Grid.X_MIN) {
-				r_new.setX(Grid.X_MIN);
-				field_line_temp.getPoints().add(new Vector2D(r_new));
-				valid_step = false;
-			}			
-			else if(r_new.getX() > Grid.X_MAX) {
-				r_new.setX(Grid.X_MAX);
-				field_line_temp.getPoints().add(new Vector2D(r_new));
-				valid_step = false;
-			}			
-			else if(r_new.getY() < Grid.Y_MIN) {
-				r_new.setY(Grid.Y_MIN);
-				field_line_temp.getPoints().add(new Vector2D(r_new));
-				valid_step = false;
-			}			
-			else if(r_new.getY() > Grid.Y_MAX) {
-				r_new.setY(Grid.Y_MAX);
-				field_line_temp.getPoints().add(new Vector2D(r_new));
-				valid_step = false;
-			}
-			
-			for(Charge c : charges) {
-				
-				if(charges.get(0).getCharge() >= 0.0f) {
-					r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
-				}
-				else {
-					r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
-				}
-				
-				r_temp = r_temp.add(r_new.scale(-1.0f));
-				
-				//System.out.println("r_new: " + r_new);
-				//System.out.println("r_temp: " + r_temp);
-				
-				if(r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {
-					field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
-					valid_step = false;
-				}
-			}			
-			
-		}		
-		
-		
-		field_lines.add(new FieldLine(field_line_temp));
-		field_line_temp.getPoints().clear();
-		*/
 		
 	}
 	

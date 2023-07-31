@@ -15,6 +15,7 @@ public class Main {
 		//PointCharge q2 = new PointCharge(0.05f, 0.0866f, 1.5E-8f);
 		//PointCharge q3 = new PointCharge(0.1f, 0.0f, -2.0E-8f);
 		
+		/*
 		// Example 2:
 		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   1.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
@@ -23,7 +24,7 @@ public class Main {
 		//PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
 		
 		ElectricField e = new ElectricField(q1, q2);
-		
+		*/
 		
 		/*
 		// Example 3:
@@ -36,15 +37,45 @@ public class Main {
 		*/
 		
 		
+		/*
+		// Example 4:
+		PointCharge q1 = new PointCharge(-0.1f,  -0.1f, 1.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f,   0.1f, 1.0E-6f);		
+				
+		ElectricField e = new ElectricField(q1, q2);
+		*/
+		
+		
+		/*
+		// Example 5:
+		PointCharge q1 = new PointCharge(-0.1f,  -0.1f, -1.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f,   0.1f, -1.0E-6f);		
+				
+		ElectricField e = new ElectricField(q1, q2);
+		*/
+		
+		
+		
+		// Example 6:
+		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   2.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
+		
+		//PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
+		//PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
+		
+		ElectricField e = new ElectricField(q1, q2);
+		
+		
 		e.calculateFieldLines();
 				
-		
+		/*
 		for(FieldLine f : e.getFieldLines()) {
 			System.out.println("field line ");
 			for(Vector2D v : f.getPoints()) {
 				System.out.println(v);
 			}
 		}
+		*/
 		
 		
 				

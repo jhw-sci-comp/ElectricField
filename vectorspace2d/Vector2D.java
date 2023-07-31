@@ -40,6 +40,7 @@ public class Vector2D {
 	public void copy(Vector2D v_arg) {
 		this.x = v_arg.getX();
 		this.y = v_arg.getY();
+		this.calculateDirection();
 	}
 	
 	public Vector2D add(Vector2D v_arg) {

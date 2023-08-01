@@ -27,6 +27,7 @@ public class Vector2D {
 	
 	public void setX(float x) {
 		this.x = x;
+		this.calculateDirection();
 	}
 	
 	public float getY() {
@@ -35,6 +36,7 @@ public class Vector2D {
 	
 	public void setY(float y) {
 		this.y = y;
+		this.calculateDirection();
 	}
 	
 	public void copy(Vector2D v_arg) {

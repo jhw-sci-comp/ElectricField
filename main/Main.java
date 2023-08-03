@@ -67,6 +67,8 @@ public class Main {
 		
 		
 		e.calculateFieldLines();
+		
+		//System.out.println("field lines: " + e.getFieldLines().size());
 				
 		/*
 		for(FieldLine f : e.getFieldLines()) {

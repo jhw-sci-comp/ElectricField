@@ -13,6 +13,6 @@ public class PointCharge extends Charge {
 	
 	public PointCharge(float x, float y, float charge) {
 		super(new Vector2D(x, y), charge);				
-	}	
+	}
 
 }

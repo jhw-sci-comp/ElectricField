@@ -7,4 +7,5 @@ public class VectorSpace2D {
 		return (float) Math.sqrt(Math.pow(p.getX(), 2) + Math.pow(p.getY(), 2));
 	}
 	
+	
 }

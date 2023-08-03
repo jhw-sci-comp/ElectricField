@@ -25,10 +25,11 @@ public class Vector2D {
 		return this.x;
 	}
 	
-	public void setX(float x) {
+	public void setX(float x) {		
 		this.x = x;
 		this.calculateDirection();
 	}
+	
 	
 	public float getY() {
 		return this.y;
@@ -102,6 +103,11 @@ public class Vector2D {
 	
 	public float getDirection() {
 		return this.direction;
+	}
+	
+	
+	public float calculateCrossProductZ(Vector2D v_arg) {
+		return (this.x * v_arg.y - this.y * v_arg.x);
 	}
 	
 	

@@ -132,8 +132,8 @@ public class ElectricField {
 		Vector2D r_temp = new Vector2D(0.0f, 0.0f);
 		FieldLine field_line_temp = new FieldLine();
 		boolean valid_step = true;
-		float step_size = 0.001f;
-		float angle = (float) (Math.PI / 8.0);
+		float step_size = 0.0005f;
+		float angle = (float) (Math.PI / 6.0);
 				
 		Vector2D r_old = new Vector2D(0.0f, 0.0f);
 		Vector2D dr_old = new Vector2D(0.0f, 0.0f);
@@ -144,15 +144,13 @@ public class ElectricField {
 		
 		
 		HashMap<Charge, ArrayList<Vector2D>> charges_start_end_points = new HashMap<Charge, ArrayList<Vector2D>>();
-		HashMap<Charge, ArrayList<Boolean>> charges_start_end_points_availability = new HashMap<Charge, ArrayList<Boolean>>();
-		
+				
 		
 		for(Charge charge : this.charges) {
 			if(charge instanceof PointCharge) {
 				charges_start_end_points.put(charge, new ArrayList<Vector2D>());
-				charges_start_end_points_availability.put(charge, new ArrayList<Boolean>());
-				
-				for(int k = 0; k < 16; k++) {
+								
+				for(int k = 0; k < 12; k++) {
 					point_temp.setX(charge.getLocation().getX() + step_size * (float) Math.cos(k * angle));
 					point_temp.setY(charge.getLocation().getY() + step_size * (float) Math.sin(k * angle));
 					
@@ -175,19 +173,16 @@ public class ElectricField {
 					//System.out.println("field vector: " + point_temp);
 					
 					//System.out.println("e field vector: " + this.calculateFieldVector(point_temp));					
-					charges_start_end_points.get(charge).add(new Vector2D(point_temp_2));
+					charges_start_end_points.get(charge).add(new Vector2D(point_temp_2));					
 					
-					charges_start_end_points_availability.get(charge).add(true);
 				}
 			}
 		}
 		
-		/*
 		for(Charge c_test : this.charges) {
 			
 			System.out.println("charge: " + c_test.getCharge() + ", " + charges_start_end_points.get(c_test));			
 		}
-		*/
 		
 						
 		
@@ -196,11 +191,11 @@ public class ElectricField {
 		
 		for(Charge charge : this.charges) {		
 			
-			
+		
 			
 			//System.out.println(charge);
 			
-			for(int i = 0; i < 16; i++) {		
+			for(int i = 0; i < 12; i++) {		
 				
 				
 				/*				
@@ -270,19 +265,23 @@ public class ElectricField {
 					else {
 						r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
 					}
-										
 					
+					
+										
 					
 					dr_new.copy(r_new);					
 					dr_new.copy(r_new.add(r_old.scale(-1)));
 					dr_new.copy(dr_new.scale(1.0f / VectorSpace2D.calculate2Norm(dr_new)));
+					
+					
+					
 													
 					
 					if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
 						field_line_temp.getPoints().add(new Vector2D(r_new));
 						
 	//TODO: Careful: special case when charge is on border will not work with this!!!!!!!!!!!!!!!!!!!
-						if(r_new.getX() == Grid.X_MIN || r_new.getX() == Grid.X_MAX || r_new.getY() == Grid.Y_MIN || r_new.getY() == Grid.Y_MAX) {
+						if(r_new.getX() == Grid.X_MIN && charge.getLocation().getX() != Grid.X_MIN || r_new.getX() == Grid.X_MAX && charge.getLocation().getX() != Grid.X_MAX || r_new.getY() == Grid.Y_MIN && charge.getLocation().getY() != Grid.Y_MIN || r_new.getY() == Grid.Y_MAX && charge.getLocation().getY() != Grid.Y_MAX) {
 							valid_step = false;
 						}
 					}
@@ -307,13 +306,18 @@ public class ElectricField {
 						valid_step = false;
 					}
 						
+					
 					/*
-					if(i == 1) {
+					if(i == 0) {
 					System.out.println("r_old: " + r_old + ", r_new: " + r_new);
 					//System.out.println("dr_old: " + dr_old + ", dr_new: " + dr_new + ", " + (Math.abs(dr_new.getDirection() - dr_old.getDirection()) > (float) Math.PI / 2.0));
-					System.out.println("dr_old: " + dr_old + ", dr_new: " + dr_new + ", " + Math.asin(Math.abs((dr_new.scale(-1.0f)).calculateCrossProductZ(dr_old)) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old))));
+					System.out.println("dr_old: " + dr_old + ", dr_new: " + dr_new + ", angle: " + (float) Math.asin((Math.abs((dr_new.scale(1.0f)).calculateCrossProductZ(dr_old))) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old))) + ", dotprod: " + VectorSpace2D.calculateDotProduct(dr_old, dr_new));
+					//Math.asin(Math.abs((dr_new.scale(-1.0f)).calculateCrossProductZ(dr_old)) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old)))
 					}
 					*/
+					
+					
+					
 					
 					
 					for(Charge c : charges) {
@@ -325,30 +329,56 @@ public class ElectricField {
 							r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
 						}
 						
+						
+						
+						/*
+						if(!c.equals(charge) && i == 7) {
+							System.out.println("r_old: " + r_old + ", r_new: " + r_new + ", r_temp: " + r_temp);
+							System.out.println("r_new - r_old: " + Math.abs(VectorSpace2D.calculate2Norm(r_new.add(r_old.scale(-1.0f)))) + ", r_new - charge: " + Math.abs(VectorSpace2D.calculate2Norm(r_new.add(c.getLocation().scale(-1.0f)))) + ", r_new - r_temp:" + + Math.abs(VectorSpace2D.calculate2Norm(r_new.add(r_temp.scale(-1.0f)))));
+						}
+						*/
+						
+						
 						r_temp = r_temp.add(r_new.scale(-1.0f));
 						
-						//System.out.println("r_new: " + r_new);
-						//System.out.println("r_temp: " + r_temp);
 						
+						/*
 						if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {					
 
 							field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
 							valid_step = false;			
 							
 						}
+						*/
+						
+					
+						if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {					
+
+							field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
+							valid_step = false;								
+							
+						}
+						
+						
 					}
 					
 										
 					
 					// if the current step points in the opposite direction as the previous step discard field line
 					//if(dr_new.add(dr_old).scale(-1).getX() == 0.0f && dr_new.add(dr_old).scale(-1).getY() == 0.0f) {
-					if(Math.abs(dr_new.getDirection() - dr_old.getDirection()) > (float) Math.PI / 2.0) {
+					//if(Math.abs(dr_new.getDirection() - dr_old.getDirection()) > (float) Math.PI / 2.0) {
+					
+					if(Math.asin(Math.abs((dr_new.scale(-1.0f)).calculateCrossProductZ(dr_old)) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old))) > (float) Math.PI / 2.0 || VectorSpace2D.calculateDotProduct(dr_old, dr_new) < 0.0f) {
 						
-						//System.out.println("cancelled: charge = " + charge.getCharge() + ", line = " + i + ", dr_old = " + dr_old + ", d_new = " + dr_new);
+						System.out.println("------------------------------");
+						System.out.println("cancelled: charge = " + charge.getCharge() + ", line = " + i + ", dr_old = " + dr_old + ", d_new = " + dr_new + ", dotprod: " + VectorSpace2D.calculateDotProduct(dr_old, dr_new));
+						System.out.println("r_old: " + r_old + ", r_new: " + r_new);
+						System.out.println("field line: " + field_line_temp.getPoints());
 												
 						valid_step = false;
 						field_line_temp.getPoints().clear();
 					}
+					
 					
 				}	
 				
@@ -369,7 +399,7 @@ public class ElectricField {
 			
 			
 			
-		}
+		}// end if iteration over charges
 		
 		//System.out.println("field lines: " + field_lines.size());
 		

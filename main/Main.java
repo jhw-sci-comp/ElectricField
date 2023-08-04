@@ -10,20 +10,23 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		
 		// Example 1:
-		//PointCharge q1 = new PointCharge(0.0f, 0.0f, 2.5E-8f);
-		//PointCharge q2 = new PointCharge(0.05f, 0.0866f, 1.5E-8f);
-		//PointCharge q3 = new PointCharge(0.1f, 0.0f, -2.0E-8f);
+		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   1.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
+		
+		ElectricField e = new ElectricField(q1, q2);
+		
 		
 		/*
 		// Example 2:
 		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   1.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
 		
-		//PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
-		//PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
+		PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
+		PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
 		
-		ElectricField e = new ElectricField(q1, q2);
+		ElectricField e = new ElectricField(q1, q2, q3, q4);
 		*/
 		
 		/*
@@ -55,20 +58,38 @@ public class Main {
 		*/
 		
 		
-		
+		/*
 		// Example 6:
 		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   2.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
 		
-		//PointCharge q3 = new PointCharge( 0.0f, 0.1f,  -1.0E-6f);
-		//PointCharge q4 = new PointCharge( 0.0f, -0.1f,  1.0E-6f);
 		
 		ElectricField e = new ElectricField(q1, q2);
+		*/
+		
+		/*
+		// Example 7:
+		PointCharge q1 = new PointCharge(-0.1f, -0.1f,  1.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f, -0.1f,  1.0E-6f);
+		PointCharge q3 = new PointCharge( 0.1f,  0.1f,  1.0E-6f);
+		PointCharge q4 = new PointCharge(-0.1f,  0.1f,   1.0E-6f);
+		PointCharge q5 = new PointCharge( 0.0f,  0.0f,   1.0E-6f);
+		
+		ElectricField e = new ElectricField(q1, q2, q3, q4, q5);
+		*/
+		
+		/*
+		// Example 8:
+		PointCharge q1 = new PointCharge(-0.1f, 0.1f,   1.0E-6f);
+		PointCharge q2 = new PointCharge( 0.1f, -0.1f,  -1.0E-6f);
+		
+		ElectricField e = new ElectricField(q1, q2);
+		*/
 		
 		
 		e.calculateFieldLines();
 		
-		//System.out.println("field lines: " + e.getFieldLines().size());
+	System.out.println("field lines: " + e.getFieldLines().size());
 				
 		/*
 		for(FieldLine f : e.getFieldLines()) {

@@ -122,7 +122,8 @@ public class VisualizationElectricField extends JPanel {
 		int transformed_x_range = transformScale((Grid.X_MAX - Grid.X_MIN));
 		int transformed_y_range = transformScale((Grid.Y_MAX - Grid.Y_MIN));
 		
-		g2.setColor(new Color(80, 80, 80));
+		//g2.setColor(new Color(80, 80, 80));
+		g2.setColor(Color.GRAY);
 		g2.setStroke(new BasicStroke(0.5f));		
 				
 		for(int i = x_shift; i <  x_shift + transformed_x_range; i += 10) {
@@ -134,8 +135,8 @@ public class VisualizationElectricField extends JPanel {
 		
 	    g2.setFont(font);
 	    g2.setStroke(new BasicStroke(1.6f));
-		//g2.setColor(Color.darkGray);
-	    g2.setColor(new Color(80, 80, 80));
+		g2.setColor(Color.GRAY);
+	    //g2.setColor(new Color(80, 80, 80));
 		
 		for(int i = x_shift; i <=  x_shift + transformed_x_range; i += 50) {			
 			if((i - x_shift) % 100 == 0) {
@@ -523,7 +524,9 @@ public class VisualizationElectricField extends JPanel {
 	private void drawFieldLines(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		
-		g2d.setColor(Color.RED);
+		g2d.setColor(Color.BLACK);
+		//g2d.setStroke(new BasicStroke(2.5f));
+		
 		for(FieldLine f : this.electric_field.getFieldLines()) {
 			for(int k = 0; k < f.getPoints().size() - 1; k++) {
 				g2d.drawLine((int) this.transformCoordinate(f.getPoints().get(k)).getX(), (int) this.transformCoordinate(f.getPoints().get(k)).getY(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getX(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getY());

@@ -8,10 +8,9 @@ import vectorspace2d.VectorSpace2D;
 public class ODE {
 		
 	public static Vector2D solveODEStep(Vector2D r, float h, Function<Vector2D, Vector2D> func){
-		//Vector2D solution = new Vector2D(0.0f, 0.0f);
-		//float h = h_start;
+		
 		Vector2D r_new = new Vector2D(r.getX(), r.getY());
-		//boolean valid_step = true;
+		
 		float normalized_func = 0.0f;
 		Vector2D k1 = new Vector2D(0.0f, 0.0f);
 		Vector2D k2 = new Vector2D(0.0f, 0.0f);
@@ -28,11 +27,8 @@ public class ODE {
 		k3 = func.apply(r_new.add(k2.scale(h / 2.0f))).scale(1.0f / normalized_func);
 		k4 = func.apply(r_new.add(k3.scale(h))).scale(1.0f / normalized_func);
 		
-		r_new = r_new.add((k1.add(k2.scale(2.0f).add(k3.scale(2.0f).add(k4))).scale(h / 6.0f)));
+		r_new.copy(r_new.add((k1.add(k2.scale(2.0f).add(k3.scale(2.0f).add(k4))).scale(h / 6.0f))));
 		
-		//solution.add(r_new);
-		
-		//System.out.println("ODE r_new: " + r_new.hashCode());
 
 		
 		return r_new;

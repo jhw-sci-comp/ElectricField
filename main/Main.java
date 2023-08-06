@@ -11,7 +11,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-						
+		
 		// Example 1:
 		PointCharge q1 = new PointCharge(-0.1f, 0.0f,   1.0E-6f);
 		PointCharge q2 = new PointCharge( 0.1f, 0.0f,  -1.0E-6f);
@@ -29,6 +29,7 @@ public class Main {
 		
 		ElectricField e = new ElectricField(q1, q2, q3, q4);
 		*/
+		
 		
 		/*
 		// Example 3:
@@ -67,6 +68,7 @@ public class Main {
 		ElectricField e = new ElectricField(q1, q2);
 		*/
 		
+		
 		/*
 		// Example 7:
 		PointCharge q1 = new PointCharge(-0.1f, -0.1f,  1.0E-6f);
@@ -87,13 +89,22 @@ public class Main {
 		*/
 		
 		
-		e.calculateFieldLines();		
+		e.calculateFieldLines();
+		
+		/*
+		for(FieldLine f : e.getFieldLines()) {
+			System.out.println(f.getPoints());
+		}
+		*/
+		
 				
 		e.calculateVectorField();
 		
 				
 		MainFrame main_frame = new MainFrame(e);
 		main_frame.setVisible(true);
+		
+		
 		
 		
 	}

@@ -3,17 +3,10 @@ package visualization;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import electricfield.ElectricField;
-import vectorspace2d.Vector2D;
+
 
 
 public class MainFrame extends JFrame {

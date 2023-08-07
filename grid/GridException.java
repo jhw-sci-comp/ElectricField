@@ -2,7 +2,7 @@ package grid;
 
 import vectorspace2d.Vector2D;
 
-public class GridBoundaryException extends Exception {
+public class GridException extends Exception {
 	
 	/*
 	private Vector2D point = new Vector2D(0.0f, 0.0f);

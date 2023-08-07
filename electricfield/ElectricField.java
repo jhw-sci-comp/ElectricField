@@ -3,21 +3,30 @@ package electricfield;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
 import charge.Charge;
+import charge.ChargeLocationGridBoundaryException;
+import charge.ChargeValueException;
+import charge.ChargesIdenticalLocationException;
 import charge.PointCharge;
 import grid.Grid;
-import grid.GridBoundaryException;
+import grid.GridException;
 import ode.ODE;
-//import grid.Grid;
 import vectorspace2d.Vector2D;
 import vectorspace2d.VectorSpace2D;
 
 
+
+
+/*
+ * Class for representing an electric field mainly represented by field vectors, field lines and electric potentials
+ * */
+
+
+
 public class ElectricField {
-	private static final float EPS_0 = 8.854E-12f;
-	private float eps_r = 1.0f;	
-	private ArrayList<Charge> charges = new ArrayList<Charge>();
+	private static final float EPS_0 = 8.854E-12f;								// electric field constant (vacuum permittivity)
+	private float eps_r = 1.0f;													// relative permittivity
+	private ArrayList<Charge> charges = new ArrayList<Charge>();				// 
 	private ArrayList<FieldLine> field_lines = new ArrayList<FieldLine>();
 	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();
 	private ArrayList<Float> potentials = new ArrayList<Float>();
@@ -26,10 +35,36 @@ public class ElectricField {
 	private float min_potential = 0.0f;
 	private float max_potential = 0.0f;
 	
-	public ElectricField(Charge... charges) {
+	private ArrayList<Vector2D> zero_vectors = new ArrayList<Vector2D>();
+	
+	
+	public ElectricField(Charge... charges) throws GridException, ChargeValueException {		
+		
 		for(Charge c : charges) {
+			if(c.getLocation().getX() < Grid.X_MIN || c.getLocation().getX() > Grid.X_MAX || c.getLocation().getY() < Grid.Y_MIN || c.getLocation().getY() > Grid.Y_MAX) {
+				throw new ChargeLocationGridBoundaryException();
+			}
+			
+			if(c.getCharge() < Charge.MINCHARGE || c.getCharge() > Charge.MAXCHARGE) {
+				throw new ChargeValueException();
+			}			
+			
 			this.charges.add(c);
 		}
+		
+		
+		for(int i = 0; i < this.charges.size(); i++) {
+			for(int j = i + 1; j < this.charges.size(); j++) {
+				if(this.charges.get(i).getLocation().equals(this.charges.get(j).getLocation())) {
+					throw new ChargesIdenticalLocationException();
+				}
+			}
+		}
+		
+		
+				
+		this.calculateVectorField();
+		this.calculateFieldLines();
 				
 	}	
 	
@@ -41,24 +76,12 @@ public class ElectricField {
 		float factor = 0.0f;
 		float dx, dy;
 		boolean is_charge_in_p = false;
-		
-		//System.out.println("p: " + p);
-		
-				
+							
 		for(int i = 0; i < charges.size(); i++) {
 			dx = p.getX() - charges.get(i).getLocation().getX();
-			dy = p.getY() - charges.get(i).getLocation().getY();
+			dy = p.getY() - charges.get(i).getLocation().getY();			
 			
-			//System.out.println("dx: " + dx);
-			//System.out.println("dy: " + dy);
-			//System.out.println("norm: " + VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)));
-			
-			//System.out.println(i + ": " + (float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
-			
-			
-			
-			if(dx == 0.0f && dy == 0.0f) {
-				//System.out.println(charges.get(i));
+			if(dx == 0.0f && dy == 0.0f) {				
 				is_charge_in_p = true;
 				E_x = 0.0f;
 				E_y = 0.0f;
@@ -66,8 +89,7 @@ public class ElectricField {
 			
 			if(!is_charge_in_p) {
 				factor = charges.get(i).getCharge() / ((float) (Math.pow(VectorSpace2D.calculate2Norm(new Vector2D(dx, dy)), 3)));
-				//System.out.println("factor: " + factor);
-				
+								
 				E_x += factor * dx;
 				E_y += factor * dy;
 			}
@@ -76,9 +98,7 @@ public class ElectricField {
 		
 		factor = 1.0f / (4.0f * (float) Math.PI * EPS_0 * eps_r);		
 		E_x = factor * E_x;
-		E_y = factor * E_y;
-		
-		//System.out.println("E_x: " + E_x);
+		E_y = factor * E_y;		
 		
 		return new Vector2D(E_x, E_y);
 	}	
@@ -95,8 +115,7 @@ public class ElectricField {
 			dx = p.getX() - charges.get(i).getLocation().getX();
 			dy = p.getY() - charges.get(i).getLocation().getY();
 			
-			if(dx == 0.0f && dy == 0.0f) {
-				//System.out.println(charges.get(i));
+			if(dx == 0.0f && dy == 0.0f) {				
 				is_charge_in_p = true;
 				potential = 0.0f;
 			}
@@ -113,14 +132,24 @@ public class ElectricField {
 	public void calculateVectorField() {		
 		for(int i = 0; i <= grid.getRows(); i++) {
 			for(int j = 0; j <= grid.getCols(); j++) {				
-				this.potentials.add(this.calculateElectricPotential(grid.getPoints().get(i * (grid.getCols() + 1) + j)));				
+				this.potentials.add(this.calculateElectricPotential(grid.getPoints().get(i * (grid.getCols() + 1) + j)));
+				
+				if(Math.abs(this.calculateFieldVector(grid.getPoints().get(i * (grid.getCols() + 1) + j)).getX()) < 1.0E-8f && Math.abs(this.calculateFieldVector(new Vector2D(grid.getPoints().get(i * (grid.getCols() + 1) + j))).getY()) < 1.0E-8f) {
+					
+					this.zero_vectors.add(new Vector2D(grid.getPoints().get(i * (grid.getCols() + 1) + j)));
+					
+				}
 				
 				if((i % 5 == 0) && (j % 5 == 0)) {					
 					this.vector_field.add(new Vector2D(this.calculateFieldVector(grid.getPoints().get(i * (grid.getCols() + 1) + j))));					
-					//System.out.println("(" + grid.getPoints().get(i * (grid.getCols() + 1) + j).getX() + ", " + grid.getPoints().get(i * (grid.getCols() + 1) + j).getY() + "), " + this.calculateFieldVector(grid.getPoints().get(i * (grid.getCols() + 1) + j)));
 				}
 			}
 		}
+		
+		for(Charge c : this.charges) {
+			this.zero_vectors.removeIf(v -> (v.getX() == c.getLocation().getX()) && (v.getY() == c.getLocation().getY()));
+		}
+						
 		
 		this.calculateMinPotential();
 		this.calculateMaxPotential();
@@ -141,13 +170,10 @@ public class ElectricField {
 		Vector2D dr_new = new Vector2D(0.0f, 0.0f);	
 		
 		Vector2D point_temp = new Vector2D(0.0f, 0.0f);
-		Vector2D point_temp_2 = new Vector2D(0.0f, 0.0f);
-		
+		Vector2D point_temp_2 = new Vector2D(0.0f, 0.0f);		
 		
 		HashMap<Charge, ArrayList<Vector2D>> charges_start_end_points = new HashMap<Charge, ArrayList<Vector2D>>();
-		
-		
-			
+						
 		
 		for(Charge charge : this.charges) {
 			if(charge instanceof PointCharge) {
@@ -173,13 +199,7 @@ public class ElectricField {
 				}
 			}
 		}
-		
-		for(Charge c_test : this.charges) {
-			
-			System.out.println("charge: " + c_test.getCharge() + ", " + charges_start_end_points.get(c_test));			
-		}		
-		
-		
+				
 		
 		for(Charge charge : this.charges) {				
 			
@@ -258,8 +278,7 @@ public class ElectricField {
 						field_line_temp.getPoints().add(new Vector2D(r_new));
 						valid_step = false;
 					}	
-					
-					
+										
 					
 										
 					for(Charge c : charges) {
@@ -275,7 +294,7 @@ public class ElectricField {
 						r_temp = r_temp.add(r_new.scale(-1.0f));
 												
 					
-						//if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), VectorSpace2D.calculate2Norm(r_temp))) {	
+						
 						if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), 0.001f)) {						
 							
 
@@ -284,11 +303,20 @@ public class ElectricField {
 							
 						}
 						
-					}				
+					}	
 										
 					
-					// if the current step points in the opposite direction as the previous step discard field line										
-					if(Math.asin(Math.abs((dr_new.scale(-1.0f)).calculateCrossProductZ(dr_old)) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old))) > (float) Math.PI / 2.0 || VectorSpace2D.calculateDotProduct(dr_old, dr_new) < 0.0f) {					
+					for(Vector2D v : this.zero_vectors) {
+						if(VectorSpace2D.calculate2Norm(r_new.add(v.scale(-1.0f))) < 0.0001f) {
+							valid_step = false;
+							field_line_temp.getPoints().clear();
+						}
+					}
+					
+					
+														
+					if(Math.asin(Math.abs((dr_new.scale(-1.0f)).calculateCrossProductZ(dr_old)) / (VectorSpace2D.calculate2Norm(dr_new) * VectorSpace2D.calculate2Norm(dr_old))) > (float) Math.PI / 2.0 || VectorSpace2D.calculateDotProduct(dr_old, dr_new) < 0.0f) {
+						
 						valid_step = false;
 						field_line_temp.getPoints().clear();
 					}					

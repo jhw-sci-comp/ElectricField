@@ -2,12 +2,19 @@ package charge;
 
 import vectorspace2d.Vector2D;
 
+
+/*
+ * Superclass for charges providing the value and location as attributes.*
+ */
+
+
+
 public abstract class Charge {
-	public static final float MINCHARGE = -3E-6f;  //minimum charge -3 micro Coulomb 
-	public static final float MAXCHARGE =  3E-6f;  //minimum charge -3 micro Coulomb
+	public static final float MINCHARGE = -3E-6f;  //minimum charge: -3 * 10^{-6} C
+	public static final float MAXCHARGE =  3E-6f;  //minimum charge:  3 * 10^{-6} C
 	
-	protected float value;
-	protected Vector2D location;
+	protected float value;			// value of charge
+	protected Vector2D location;	// location of charge
 	
 	public Charge(Vector2D location, float value) {
 		this.location = location;

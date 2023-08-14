@@ -6,21 +6,14 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import java.util.Collections;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import com.sun.javafx.binding.StringFormatter;
-
 import charge.Charge;
 import electricfield.ElectricField;
 import electricfield.FieldLine;
 import grid.Grid;
-import vectorspace2d.Vector2D;
 
 
 public class VisualizationElectricField extends JPanel {
@@ -36,12 +29,10 @@ public class VisualizationElectricField extends JPanel {
 	private float max_potential;     // maximum potential
 	
 	
-	
-	//public VisualizationElectricField(JPanel layout_panel, ElectricField electric_field) {
 	public VisualizationElectricField(JFrame main_window, ElectricField electric_field) {		 		 
 		 this.electric_field = electric_field;
 		 
-		 this.main_frame = main_window;
+		 this.main_frame = main_window;		
 		 
 		 this.min_potential = this.electric_field.getMinPotential();
 		 this.max_potential = this.electric_field.getMaxPotential();		 
@@ -53,8 +44,7 @@ public class VisualizationElectricField extends JPanel {
 		
 		scaling = (int) (800 /  (Grid.X_MAX - Grid.X_MIN));
 		
-		//System.out.println("scaling: " + scaling);		
-		
+				
 		this.setSize(this.main_frame.getWidth(), this.main_frame.getHeight());
 		x_shift = (int) (this.getWidth() / 2 - (Grid.X_MAX - Grid.X_MIN) * scaling / 2);
 		y_shift = (int) (this.getHeight() / 2.2 - (Grid.Y_MAX - Grid.Y_MIN) * scaling / 2);
@@ -72,46 +62,24 @@ public class VisualizationElectricField extends JPanel {
 	}
 	
 	
-	private Vector2D transformCoordinate(float x, float y){
-		float x_transformed, y_transformed;	
+
+	
+	
+	private Point transformCoordinate(float x, float y){
+		int x_transformed, y_transformed;	
 		
 		x_transformed = x_shift + (int) ((Math.abs(Grid.X_MIN) + x) * scaling);
-		y_transformed = y_shift + (int) ((Grid.Y_MAX - y) * scaling);
+		y_transformed = y_shift + (int) ((Grid.Y_MAX - y) * scaling);		
 		
-		//System.out.println("transformeCoordinate(): " + transformed_coordinates.get(0));
-		
-		return new Vector2D(x_transformed, y_transformed);
+		return new Point(x_transformed, y_transformed);
 	}
 	
-	private Vector2D transformCoordinate(Vector2D point){
-		float x_transformed, y_transformed;	
 		
-		x_transformed = x_shift + (int) ((Math.abs(Grid.X_MIN) + point.getX()) * scaling);
-		y_transformed = y_shift + (int) ((Grid.Y_MAX - point.getY()) * scaling);
 		
-		//System.out.println("transformeCoordinate(): " + transformed_coordinates.get(0));
-		
-		return new Vector2D(x_transformed, y_transformed);
-	}
-	
-	
-	/*
-	private ArrayList<Integer> transformCoordinate(float x, float y){
-		ArrayList<Integer> transformed_coordinates = new ArrayList<Integer>();		
-		
-		transformed_coordinates.add(x_shift + (int) ((Math.abs(Grid.X_MIN) + x) * scaling));
-		transformed_coordinates.add(y_shift + (int) ((Grid.Y_MAX - y) * scaling));
-		
-		//System.out.println("transformeCoordinate(): " + transformed_coordinates.get(0));
-		
-		return transformed_coordinates;
-	}
-	*/
-	
-	
 	private int transformScale(float range) {
 		return (int) (range * scaling);
 	}
+	
 	
 	private void drawGrid(Graphics g) {		
 		//g.setColor(Color.lightGray);
@@ -180,16 +148,14 @@ public class VisualizationElectricField extends JPanel {
 	}
 	
 	
-	private void drawCharges(Graphics g) {
-		//ArrayList<Integer> transformed_location = new ArrayList<Integer>();
-		Vector2D transformed_location = new Vector2D(0.0f, 0.0f);
+	private void drawCharges(Graphics g) {				
+		Point transformed_location = new Point(0, 0);
 		
 		for(Charge c : electric_field.getCharges()) {
 			transformed_location.setX((int) transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).getX());
 			transformed_location.setY((int) transformCoordinate(c.getLocation().getX(), c.getLocation().getY()).getY());
 			
-			//System.out.println("transformed_location: " + transformed_location.get(0) + ", " + transformed_location.get(1));
-			
+						
 			if(c.getCharge() >= 0.0f) {
 				g.setColor(new Color(0, 0 ,150));
 				g.fillOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);
@@ -203,7 +169,7 @@ public class VisualizationElectricField extends JPanel {
 				g.drawOval((int) (transformed_location.getX() - 5), (int) (transformed_location.getY() - 5), 10, 10);				
 			}
 			
-			//transformed_location.clear();
+			
 		}
 	}
 	
@@ -217,7 +183,7 @@ public class VisualizationElectricField extends JPanel {
 		float direction;
 		float point_x, point_y, field_vector_x, field_vector_y;
 		
-		//System.out.println("vector field size: " + electric_field.getVectorField().size());
+		
 		
 		for(int i = 0; i <= this.electric_field.getGrid().getRows(); i += 5) {
 			for(int j = 0; j <= this.electric_field.getGrid().getCols(); j += 5) {
@@ -227,7 +193,7 @@ public class VisualizationElectricField extends JPanel {
 				transformed_location.add((int) transformCoordinate(point_x, point_y).getY());
 								
 				g2.setColor(Color.DARK_GRAY);
-				//g2.setColor(new Color(90, 90, 90));
+				
 				
 				x_points = new int[3];
 				x_points[0] = transformed_location.get(0) - 6;
@@ -238,22 +204,11 @@ public class VisualizationElectricField extends JPanel {
 				y_points[1] = transformed_location.get(1);
 				y_points[2] = transformed_location.get(1) + 6;
 				
-				//System.out.println(this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j) + ", direction: " + this.electric_field.getVectorField().get((this.electric_field.getGrid().getCols() + 1) + j).getDirection());
-				//System.out.println("(" + this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getX() + ", " + this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getY() + "), " + this.electric_field.getVectorField().get(i/5  + j/5));
-			    //System.out.println("index: " + i * (this.electric_field.getGrid().getCols() + 1) + j);
-				
-				
-				//System.out.println("(" + i + ", " + j + ") " + "index: " + (i * (electric_field.getGrid().getCols() / 5 + 1) + j)/5);
 				direction = electric_field.getVectorField().get((i * (electric_field.getGrid().getCols() / 5 + 1) + j) / 5).getDirection();
 				field_vector_x = electric_field.getVectorField().get((i * (electric_field.getGrid().getCols() / 5 + 1) + j) / 5).getX();
 				field_vector_y = electric_field.getVectorField().get((i * (electric_field.getGrid().getCols() / 5 + 1) + j) / 5).getY();
 				
-				
-				//direction = 3.0f/4.0f * (float) Math.PI;
-				//System.out.println("(" + this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getX() + ", " + this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j).getY() + "), " + "direction: " + direction);
-				
-				//direction = (float) (Math.toRadians(45));				
-				
+								
 				if(field_vector_x != 0.0f || field_vector_y != 0.0f) {
 					at.rotate(-direction, transformed_location.get(0), transformed_location.get(1));
 					g2.setTransform(at);
@@ -278,8 +233,7 @@ public class VisualizationElectricField extends JPanel {
 		
 		
 		for(int i = 0; i < electric_field.getGrid().getRows(); i ++) {
-			for(int j = 0; j < electric_field.getGrid().getCols(); j ++) {
-				//System.out.println(this.electric_field.getGrid().getPoints().get(i * (this.electric_field.getGrid().getCols() + 1) + j));
+			for(int j = 0; j < electric_field.getGrid().getCols(); j ++) {				
 				p_00 = this.electric_field.getPotentials().get(i * (this.electric_field.getGrid().getCols() + 1) + j);
 				p_10 = this.electric_field.getPotentials().get(i * (this.electric_field.getGrid().getCols() + 1) + (j + 1));
 				p_11 = this.electric_field.getPotentials().get((i + 1) * (this.electric_field.getGrid().getCols() + 1) + (j + 1));
@@ -288,9 +242,7 @@ public class VisualizationElectricField extends JPanel {
 				color_values = this.getPotentialColor((p_00 + p_10 + p_11 + p_01) / 4.0f);
 				
 								
-				g.setColor(new Color(color_values.get(0), color_values.get(1), color_values.get(2)));
-				//g.setColor(Color.ORANGE);
-				//g.fillRect(x_shift + i * 10, y_shift + y_range  - (j + 1) * 10, 10, 10);	
+				g.setColor(new Color(color_values.get(0), color_values.get(1), color_values.get(2)));					
 				g.fillRect(x_shift + j * 10, y_shift + y_range  - (i + 1) * 10, 10, 10);
 				
 				color_values.clear();
@@ -398,11 +350,7 @@ public class VisualizationElectricField extends JPanel {
 		}
 		
 		scale_subinterval = (max_scale - min_scale) / 6.0f;
-        
-		//System.out.println("max_scale: " + max_scale);
-		//System.out.println("max_potential: " + max_potential);
-        //System.out.println("color 1: " + (int)(((max_potential - (min_scale + 4.0f * scale_subinterval)) / scale_subinterval/2.0f) * 250));
-		//System.out.println("y: " + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800));
+        		
 		color_1_values.add(0);
 		color_1_values.add(0);
 		color_1_values.add(55);
@@ -428,7 +376,7 @@ public class VisualizationElectricField extends JPanel {
 		color_2_values.add(255);
 		color_2_values.add(255);
 		y_pos_1 = y_pos_2;
-		//y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		
 		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800);
 		gp = new GradientPaint(x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
         g2d.setPaint(gp);        
@@ -437,7 +385,7 @@ public class VisualizationElectricField extends JPanel {
         color_1_values.clear();
         color_2_values.clear();
         
-        //System.out.println("color 1: " + ((((min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (0.2f * scale_subinterval)) * 255));
+        
         color_1_values.add(0);
 		color_1_values.add(255);
 		color_1_values.add(255);	
@@ -446,7 +394,7 @@ public class VisualizationElectricField extends JPanel {
 		color_2_values.add(255);
 		color_2_values.add(0);	
 		y_pos_1 = y_pos_2;
-		//y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval)) / (max_scale - min_scale) * 800) + (int) (((min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (max_scale - min_scale) * 800);
+		
 		y_pos_2 = y_shift + (int) ((max_scale - (min_scale + 4.0f * scale_subinterval) + (min_scale + 4.0f * scale_subinterval) - (min_scale + 3.1f * scale_subinterval) + (min_scale + 3.1f * scale_subinterval) - (min_scale + 2.9f * scale_subinterval)) / (max_scale - min_scale) * 800);
 		gp = new GradientPaint(x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 100, y_pos_1, new Color(color_1_values.get(0), color_1_values.get(1), color_1_values.get(2)), x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 100, y_pos_2, new Color(color_2_values.get(0), color_2_values.get(1), color_2_values.get(2)));
         g2d.setPaint(gp);        
@@ -495,8 +443,7 @@ public class VisualizationElectricField extends JPanel {
        g2d.setColor(Color.darkGray);
        g2d.drawRect(x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 100, y_shift, 50, 800);
        
-       //System.out.println("max potential: " + this.max_potential);
-       
+              
        if(Math.max(Math.abs(this.min_potential), Math.abs(this.max_potential)) % 5.0f != 0.0f) {
     	   scale_tick_range = (int) ((Math.max(Math.abs(this.min_potential), Math.abs(this.max_potential)) / 5.0f) - 1);
        }
@@ -515,9 +462,7 @@ public class VisualizationElectricField extends JPanel {
        }
        
        g2d.drawString("electric potential [V]", x_shift + (int) ((Grid.X_MAX - Grid.X_MIN) * this.scaling) + 50, y_shift + 855);
-              
-       
-       //g2d.drawString(Float.toString(min_potential), x_shift + (int) ((Grid.MAXWIDTH - Grid.MINWIDTH) * this.scaling) + 170, y_shift + 800);
+                
 	
 	}
 	
@@ -525,11 +470,11 @@ public class VisualizationElectricField extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		
 		g2d.setColor(Color.BLACK);
-		//g2d.setStroke(new BasicStroke(2.5f));
+		
 		
 		for(FieldLine f : this.electric_field.getFieldLines()) {
-			for(int k = 0; k < f.getPoints().size() - 1; k++) {
-				g2d.drawLine((int) this.transformCoordinate(f.getPoints().get(k)).getX(), (int) this.transformCoordinate(f.getPoints().get(k)).getY(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getX(), (int) this.transformCoordinate(f.getPoints().get(k + 1)).getY());
+			for(int k = 0; k < f.getPoints().size() - 1; k++) {				
+				g2d.drawLine((int) this.transformCoordinate(f.getPoints().get(k).getX(), f.getPoints().get(k).getY()).getX(), (int) this.transformCoordinate(f.getPoints().get(k).getX(), f.getPoints().get(k).getY()).getY(), (int) this.transformCoordinate(f.getPoints().get(k + 1).getX(), f.getPoints().get(k + 1).getY()).getX(), (int) this.transformCoordinate(f.getPoints().get(k + 1).getX(), f.getPoints().get(k + 1).getY()).getY());
 			}
 		}
 	}

@@ -93,7 +93,7 @@ public class Main {
 			*/
 			
 			/*
-			// Example 4:
+			// Example 9:
 			PointCharge q1 = new PointCharge(-0.1f,  0.0f, 1.0E-6f);
 			PointCharge q2 = new PointCharge( 0.1f,   0.0f, 1.0E-6f);		
 					
@@ -118,10 +118,7 @@ public class Main {
 		}
 		catch(Exception e) {
 			System.out.println("Program terminated with an exception.");
-		}
-		
-		
-		
+		}		
 		
 	}
 

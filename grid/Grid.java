@@ -1,7 +1,6 @@
 package grid;
 
 import java.util.ArrayList;
-
 import vectorspace2d.Vector2D;
 
 public class Grid {
@@ -12,18 +11,16 @@ public class Grid {
 	public static final float DISTANCE = 0.005f;
 	
 	private ArrayList<Vector2D> points = new ArrayList<Vector2D>();
-	public float width = 0.0f;
-	public float height = 0.0f;
+	private float width = 0.0f;
+	private float height = 0.0f;	
 	
-	//TODO: rename attributes because it is confusing
 	private int rows = (int) ((Grid.X_MAX - Grid.X_MIN) / Grid.DISTANCE);
 	private int cols = (int) ((Grid.Y_MAX - Grid.Y_MIN) / Grid.DISTANCE);
 		
 	public Grid() {
 		
 		for(int j = 0; j <= this.cols; j++) {
-			for(int i = 0; i <= this.rows; i++) {
-				//System.out.println(Math.round((Grid.MINWIDTH + i * Grid.DISTANCE) * 1000) / 1000.0f + ", " + Math.round((Grid.MINHEIGHT + j * Grid.DISTANCE) * 1000) / 1000.0f);
+			for(int i = 0; i <= this.rows; i++) {				
 				points.add(new Vector2D(Math.round((Grid.X_MIN + i * Grid.DISTANCE) * 1000) / 1000.0f, Math.round((Grid.Y_MIN + j * Grid.DISTANCE) * 1000) / 1000.0f));
 			}
 		}

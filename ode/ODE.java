@@ -56,40 +56,7 @@ public class ODE {
 		
 		r_new.copy(r_new.add((k1.scale(47.0f / 450.0f).add(k3.scale(12.0f / 25.0f).add(k4.scale(32.0f / 225.0f).add(k5.scale(1.0f / 30.0f).add(k6.scale(6.0f / 25.0f)))))).scale(h)));
 		
-		return r_new;
-		
-		
-		
-		/*
-		Vector2D r_new = new Vector2D(r.getX(), r.getY());
-		
-		float normalized_func = 0.0f;
-		Vector2D k1 = new Vector2D(0.0f, 0.0f);
-		Vector2D k2 = new Vector2D(0.0f, 0.0f);
-		Vector2D k3 = new Vector2D(0.0f, 0.0f);
-		Vector2D k4 = new Vector2D(0.0f, 0.0f);	
-				
-		//solution.add(v_start);		
-		
-			
-		normalized_func = VectorSpace2D.calculate2Norm(func.apply(r_new));		
-		k1 = func.apply(r_new).scale(1.0f / normalized_func);
-		
-		normalized_func = VectorSpace2D.calculate2Norm(func.apply(r_new.add(k1.scale(h / 2.0f))));
-		k2 = func.apply(r_new.add(k1.scale(h / 2.0f))).scale(1.0f / normalized_func);
-		
-		normalized_func = VectorSpace2D.calculate2Norm(func.apply(r_new.add(k2.scale(h / 2.0f))));
-		k3 = func.apply(r_new.add(k2.scale(h / 2.0f))).scale(1.0f / normalized_func);
-		
-		normalized_func = VectorSpace2D.calculate2Norm(func.apply(r_new.add(k3.scale(h))));
-		k4 = func.apply(r_new.add(k3.scale(h))).scale(1.0f / normalized_func);
-		
-		r_new.copy(r_new.add((k1.add(k2.scale(2.0f).add(k3.scale(2.0f).add(k4))).scale(h / 6.0f))));
-		
-
-		
-		return r_new;
-		*/
+		return r_new;		
 		
 	}
 

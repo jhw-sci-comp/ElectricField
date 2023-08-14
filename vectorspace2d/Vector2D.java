@@ -1,8 +1,6 @@
 package vectorspace2d;
 
 
-
-
 public class Vector2D {
 	
 	private float x;
@@ -91,8 +89,7 @@ public class Vector2D {
 			if(this.y > 0.0f) {
 				this.direction = (float) (Math.PI -  Math.abs(Math.atan(this.y / this.x)));
 			}			
-			else if(this.y < 0.0f) {
-				//this.direction = (float) -(Math.PI -  Math.abs(Math.atan(this.y / this.x)));
+			else if(this.y < 0.0f) {				
 				this.direction = (float) (Math.PI +  Math.abs(Math.atan(this.y / this.x)));
 			}
 			else if(this.y == 0.0f) {

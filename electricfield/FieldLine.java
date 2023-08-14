@@ -1,7 +1,6 @@
 package electricfield;
 
 import java.util.ArrayList;
-
 import vectorspace2d.Vector2D;
 
 public class FieldLine {

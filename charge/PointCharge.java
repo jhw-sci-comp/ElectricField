@@ -8,8 +8,7 @@ import vectorspace2d.Vector2D;
  * */
 
 
-
-public class PointCharge extends Charge {		
+public class PointCharge extends Charge {	
 	
 	public PointCharge(Vector2D location, float charge) {
 		super(location, charge);

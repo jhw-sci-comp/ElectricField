@@ -7,8 +7,6 @@ import vectorspace2d.Vector2D;
  * Superclass for charges providing the value and location as attributes.*
  */
 
-
-
 public abstract class Charge {
 	public static final float MINCHARGE = -3E-6f;  //minimum charge: -3 * 10^{-6} C
 	public static final float MAXCHARGE =  3E-6f;  //minimum charge:  3 * 10^{-6} C

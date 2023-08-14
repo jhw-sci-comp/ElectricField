@@ -25,17 +25,18 @@ import vectorspace2d.VectorSpace2D;
 
 public class ElectricField {
 	private static final float EPS_0 = 8.854E-12f;								// electric field constant (vacuum permittivity)
-	private float eps_r = 1.0f;													// relative permittivity
-	private ArrayList<Charge> charges = new ArrayList<Charge>();				// 
-	private ArrayList<FieldLine> field_lines = new ArrayList<FieldLine>();
-	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();
-	private ArrayList<Float> potentials = new ArrayList<Float>();
-	private Grid grid = new Grid();
+	private float eps_r = 1.0f;													// approximative relative permittivity of air
+	private ArrayList<Charge> charges = new ArrayList<Charge>();				// stores all charges passed as arguments to the constructor
+	private ArrayList<FieldLine> field_lines = new ArrayList<FieldLine>();		// stores field lines as FieldLine objects
+	private ArrayList<Vector2D> vector_field = new ArrayList<Vector2D>();		// stores electric field vectors
+	private ArrayList<Float> potentials = new ArrayList<Float>();				// stores potentials of grid points
+	private Grid grid = new Grid();												// grid with discrete points for calculating vector field quantities
 	
-	private float min_potential = 0.0f;
-	private float max_potential = 0.0f;
+	private float min_potential = 0.0f;											// minimal potential
+	private float max_potential = 0.0f;											// maximal potential
 	
-	private ArrayList<Vector2D> zero_vectors = new ArrayList<Vector2D>();
+	private ArrayList<Vector2D> zero_vectors = new ArrayList<Vector2D>();		// stores point whose electric field vector is (0.0f, 0.0f)
+	
 	
 	
 	public ElectricField(Charge... charges) throws GridException, ChargeValueException {		
@@ -70,6 +71,9 @@ public class ElectricField {
 	
 	
 	
+	/*
+	 * calculates the field vector of a given point p
+	 * */
 	public Vector2D calculateFieldVector(Vector2D p) {
 		float E_x = 0.0f;
 		float E_y = 0.0f;
@@ -104,6 +108,9 @@ public class ElectricField {
 	}	
 	
 	
+	/*
+	 * calculates the electric potential of a given point p
+	 * */
 	public float calculateElectricPotential(Vector2D p) {
 		float potential = 0.0f;
 		float dx, dy;
@@ -129,6 +136,10 @@ public class ElectricField {
 	}
 	
 	
+	/*
+	 * calculates electric potential for each grid point and stores the values in potentials which is used to display the potential
+	 * calculates the electric field vector for every fifth grid point whose direction is used to draw the field direction arrowhead
+	 * */
 	public void calculateVectorField() {		
 		for(int i = 0; i <= grid.getRows(); i++) {
 			for(int j = 0; j <= grid.getCols(); j++) {				
@@ -156,6 +167,10 @@ public class ElectricField {
 	}
 	
 	
+	
+	/*
+	 * determines approximations of field lines of an electric field and stores them in attribute field_lines
+	 * */
 	public void calculateFieldLines() {		
 		Vector2D v_start = new Vector2D(0.0f, 0.0f);
 		Vector2D r_new = new Vector2D(0.0f, 0.0f);
@@ -175,6 +190,7 @@ public class ElectricField {
 		HashMap<Charge, ArrayList<Vector2D>> charges_start_end_points = new HashMap<Charge, ArrayList<Vector2D>>();
 						
 		
+		// for each point charge 12 starting directions for 12 field lines are chosen 
 		for(Charge charge : this.charges) {
 			if(charge instanceof PointCharge) {
 				charges_start_end_points.put(charge, new ArrayList<Vector2D>());
@@ -190,10 +206,8 @@ public class ElectricField {
 						point_temp_2.copy(this.calculateFieldVector(point_temp).scale(-1.0f));
 					}
 										
-					point_temp.copy(point_temp_2.scale(step_size / VectorSpace2D.calculate2Norm(point_temp_2)));
-					
-					point_temp_2.copy(point_temp.add(charge.getLocation()));
-										
+					point_temp.copy(point_temp_2.scale(step_size / VectorSpace2D.calculate2Norm(point_temp_2)));					
+					point_temp_2.copy(point_temp.add(charge.getLocation()));										
 					charges_start_end_points.get(charge).add(new Vector2D(point_temp_2));					
 					
 				}
@@ -201,22 +215,20 @@ public class ElectricField {
 		}
 				
 		
+		// iterate over charges and iterate over the 12 starting directions to calculate discrete field line points 
 		for(Charge charge : this.charges) {				
 			
 			for(int i = 0; i < 12; i++) {					
 				
-				field_line_temp.addPoint(charge.getLocation());
-				
-				v_start.copy(charges_start_end_points.get(charge).get(i));
-				
-				r_new.copy(charges_start_end_points.get(charge).get(i));
-				
-				r_temp.copy(charges_start_end_points.get(charge).get(i));	
-				
-				field_line_temp.addPoint(new Vector2D(v_start));
+				// add point charge location and sart direction point to field line
+				field_line_temp.addPoint(charge.getLocation());				
+				v_start.copy(charges_start_end_points.get(charge).get(i));				
+				r_new.copy(charges_start_end_points.get(charge).get(i));				
+				r_temp.copy(charges_start_end_points.get(charge).get(i));					
+				field_line_temp.addPoint(new Vector2D(v_start));				
 				
 				
-				
+								
 				if(charge.getCharge() >= 0.0f) {					
 					r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
 				}
@@ -225,8 +237,7 @@ public class ElectricField {
 				}			
 				
 				
-				dr_new.copy(r_new.add(charge.getLocation().scale(-1.0f)));						
-				
+				dr_new.copy(r_new.add(charge.getLocation().scale(-1.0f)));					
 				field_line_temp.addPoint(new Vector2D(r_new));					
 				
 				
@@ -234,8 +245,9 @@ public class ElectricField {
 					
 					r_old.copy(r_new);
 					dr_old.copy(dr_new);
-								
 					
+					
+					// calculate approximation of the next field line point with Runge-Kutta mathod 
 					if(charge.getCharge() >= 0.0f) {
 						r_new.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r)));
 					}
@@ -245,12 +257,10 @@ public class ElectricField {
 					
 					dr_new.copy(r_new);					
 					dr_new.copy(r_new.add(r_old.scale(-1)));
-					dr_new.copy(dr_new.scale(1.0f / VectorSpace2D.calculate2Norm(dr_new)));
-					
-					
-					
+					dr_new.copy(dr_new.scale(1.0f / VectorSpace2D.calculate2Norm(dr_new)));					
 													
 					
+					// if r_new lies outside the grid boundaries the last point of the current field line is shifted to the respective boundary r_new crossed
 					if(r_new.getX() >= Grid.X_MIN && r_new.getX() <= Grid.X_MAX && r_new.getY() >= Grid.Y_MIN && r_new.getY() <= Grid.Y_MAX) {				
 						field_line_temp.getPoints().add(new Vector2D(r_new));						
 	
@@ -277,10 +287,10 @@ public class ElectricField {
 						r_new.setY(Grid.Y_MAX);
 						field_line_temp.getPoints().add(new Vector2D(r_new));
 						valid_step = false;
-					}	
-										
+					}										
 					
-										
+					
+					
 					for(Charge c : charges) {
 						
 						if(charge.getCharge() >= 0.0f) {
@@ -288,19 +298,13 @@ public class ElectricField {
 						}
 						else {
 							r_temp.copy(ODE.solveODEStep(r_new, step_size,  (r) -> this.calculateFieldVector(r).scale(-1.0f)));
-						}
-						
+						}						
 																	
-						r_temp = r_temp.add(r_new.scale(-1.0f));
-												
-					
+						r_temp = r_temp.add(r_new.scale(-1.0f));					
 						
-						if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), 0.001f)) {						
-							
-
+						if(!c.equals(charge) && r_new.isInNeighbourhood(c.getLocation(), 0.001f)) {	
 							field_line_temp.getPoints().add(new Vector2D(c.getLocation()));
-							valid_step = false;								
-							
+							valid_step = false;							
 						}
 						
 					}	
@@ -334,9 +338,7 @@ public class ElectricField {
 				field_line_temp.getPoints().clear();
 				valid_step = true;				
 				
-			}//end for i
-			
-			
+			}//end for i			
 			
 		}// end if iteration over charges				
 		
